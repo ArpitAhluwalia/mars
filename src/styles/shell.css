@@ -1,0 +1,284 @@
+/* Microsoft Teams frame (light theme) and the MARS sidebar. */
+
+.teams-shell {
+  width: 100vw;
+  height: 100vh;
+  display: grid;
+  grid-template-columns: 68px 1fr;
+  grid-template-rows: 44px 1fr;
+  background: #1f1f1f;
+}
+
+.teams-topbar {
+  grid-column: 1 / -1;
+  padding: 0 14px;
+  display: grid;
+  grid-template-columns: 1fr minmax(320px, 560px) 1fr;
+  align-items: center;
+}
+
+.window-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.window-controls i {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ff5f57;
+}
+
+.window-controls i:nth-child(2) {
+  background: #febc2e;
+}
+
+.window-controls i:nth-child(3) {
+  background: #28c840;
+}
+
+.teams-search {
+  height: 30px;
+  padding: 0 10px;
+  border: 1px solid #3d3d3d;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #2b2b2b;
+  color: #a8a8a8;
+}
+
+.teams-search input::placeholder {
+  color: #a8a8a8;
+}
+
+.teams-search input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  font-size: 13px;
+}
+
+.teams-me {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.teams-me button {
+  border: 0;
+  background: transparent;
+  color: #c8c8c8;
+}
+
+.teams-rail {
+  padding: 4px 0 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.teams-rail-item {
+  position: relative;
+  width: 58px;
+  height: 52px;
+  border: 0;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  background: transparent;
+  color: #c8c8c8;
+}
+
+.teams-rail-item small {
+  font-size: 10px;
+  line-height: 12px;
+}
+
+.teams-rail-item:hover {
+  background: #2e2e2e;
+  color: white;
+}
+
+.teams-rail-item.active {
+  color: #7f85f5;
+}
+
+.teams-rail-item.active::before {
+  position: absolute;
+  top: 12px;
+  bottom: 12px;
+  left: -5px;
+  width: 3px;
+  border-radius: 3px;
+  background: #7f85f5;
+  content: "";
+}
+
+.teams-rail-spacer {
+  flex: 1;
+}
+
+.teams-stage {
+  min-width: 0;
+  min-height: 0;
+  border-radius: 8px 0 0 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: white;
+}
+
+.teams-appbar {
+  height: 48px;
+  flex: 0 0 auto;
+  padding: 0 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #292929;
+  color: white;
+}
+
+.teams-appbar strong {
+  font-weight: 600;
+}
+
+.teams-appbar nav {
+  height: 100%;
+  margin-left: 18px;
+  display: flex;
+  gap: 20px;
+}
+
+.teams-appbar nav button {
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: #adadad;
+  font-size: 14px;
+}
+
+.teams-appbar nav button.active {
+  border-bottom-color: #7f85f5;
+  color: white;
+  font-weight: 600;
+}
+
+/* ---------- MARS app ---------- */
+
+.mars {
+  min-height: 0;
+  flex: 1;
+  display: grid;
+  grid-template-columns: 72px 1fr;
+}
+
+.mars-main {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: white;
+}
+
+/* Icon-only nav, each tab named in small type underneath. */
+.sidebar {
+  min-height: 0;
+  padding: 10px 6px;
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--sand);
+}
+
+.side-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.side-nav button,
+.side-utility {
+  width: 60px;
+  padding: 8px 0 6px;
+  border: 0;
+  border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  color: var(--muted);
+}
+
+.side-nav button small,
+.side-utility small {
+  font-size: 10px;
+  line-height: 12px;
+}
+
+.side-nav button:hover,
+.side-utility:hover {
+  background: var(--sand-2);
+  color: var(--ink);
+}
+
+.side-nav button.active {
+  background: var(--sand-3);
+  color: var(--ink);
+}
+
+.side-nav button.active small {
+  font-weight: 500;
+}
+
+.side-icon {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  display: grid;
+  place-items: center;
+}
+
+.side-count {
+  position: absolute;
+  top: -6px;
+  right: -10px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  border: 2px solid var(--sand);
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: var(--accent);
+  color: white;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.sidebar-foot {
+  margin-top: auto;
+  padding-top: 8px;
+  border-top: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.side-user {
+  padding-bottom: 4px;
+}

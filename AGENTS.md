@@ -21,6 +21,20 @@ This is the canonical project structure. Start with task-relevant files below. O
 - `vite.config.ts` - Vite configuration with React, Tailwind CSS v4, and Figma Make plugins plus the `@` alias for `src`
 - `.mise.toml` - Toolchain versions for Node.js and pnpm
 
+### MARS prototype layout
+
+- `src/App.tsx` - Wraps the app in `MarsProvider` and switches between the four tabs
+- `src/components/ui.tsx` - Design-system primitives: Button, Pill/StatusPill, Avatar, Tabs, SearchField, Checkbox, MarsMark
+- `src/components/` - Shell (Teams frame + sidebar), DocumentViewer, TeamsThread, ActivityFeed
+- `src/screens/` - `Inbox`, `invoices/` (list, review), `Queries`, `Audit`
+- `src/state/store.tsx` - Single app store; `deriveInvoice` computes each invoice's status from its state
+- `src/data/source.ts` - Generated from the dev team's repo (nuaav/Mars-demo) POs and OCR JSON; regenerate rather than hand-edit
+- `src/data/scenario.ts` - Prototype-only details: emails, tickets, Sales reps, seeded queries
+- `src/data/reconcile.ts` - Line matching with the dev build's tolerance bands, and AI PO suggestions
+- `src/index.css` - Design tokens (Ramp-inspired: Inter, sand/white, hairlines, Meriton orange accent)
+- `src/styles/` - `ui.css` (components), `shell.css` (frame + sidebar), `screens.css` (layouts); loaded from `main.tsx`
+- Icons come from `lucide-react`
+
 ## Dependencies
 
 - Runtime: React 19 and React DOM 19
