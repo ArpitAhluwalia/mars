@@ -40,7 +40,6 @@ export default function Audit() {
               Export
             </Button>
           </div>
-          <p className="connection">One ticket per invoice, inbox to approval</p>
           <SearchField onChange={setSearch} placeholder="Search ticket, invoice or vendor" value={search} />
         </header>
         <div className="mail-list">

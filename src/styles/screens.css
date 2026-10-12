@@ -357,7 +357,7 @@
 
 /* Full-bleed page, aligned with the split views' header (Inbox, Queries, Audit). */
 .flush-head {
-  padding: 22px 24px 6px;
+  padding: 22px 20px 6px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -370,17 +370,17 @@
 }
 
 .page-flush .tabs-row {
-  padding: 0 24px;
+  padding: 0 20px;
 }
 
 .page-flush .table th:first-child,
 .page-flush .table td:first-child {
-  padding-left: 24px;
+  padding-left: 20px;
 }
 
 .page-flush .table th:last-child,
 .page-flush .table td:last-child {
-  padding-right: 24px;
+  padding-right: 20px;
 }
 
 .tabs-row {
@@ -459,99 +459,7 @@
 .review {
   height: 100%;
   display: grid;
-  grid-template-columns: 240px minmax(560px, 1fr) 420px;
-}
-
-.rail {
-  min-height: 0;
-  border-right: 1px solid var(--line);
-  display: flex;
-  flex-direction: column;
-}
-
-.rail-back {
-  margin: 14px 12px 6px;
-  padding: 6px 8px;
-  border: 0;
-  border-radius: var(--radius);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: transparent;
-  font-weight: 500;
-  text-decoration: underline;
-  text-decoration-color: var(--line-strong);
-  text-underline-offset: 3px;
-}
-
-.rail-back:hover {
-  background: var(--sand);
-}
-
-.rail-list {
-  min-height: 0;
-  flex: 1;
-  overflow: auto;
-  padding: 0 8px 12px;
-}
-
-.rail-group {
-  padding: 14px 10px 6px;
-  color: var(--muted);
-  font-size: 13px;
-}
-
-.rail-item {
-  width: 100%;
-  padding: 8px 10px;
-  border: 0;
-  border-radius: var(--radius);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  background: transparent;
-  text-align: left;
-}
-
-.rail-item:hover {
-  background: var(--sand);
-}
-
-.rail-item.active {
-  background: var(--sand-2);
-}
-
-.rail-item strong {
-  font-size: 13px;
-}
-
-.rail-item small {
-  font-size: 12px;
-}
-
-.rail-foot {
-  height: 52px;
-  padding: 0 18px;
-  border-top: 1px solid var(--line);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  color: var(--muted);
-  font-size: 13px;
-}
-
-.rail-foot button {
-  padding: 0;
-  border: 0;
-  background: transparent;
-  font-weight: 500;
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
-
-.rail-foot button:disabled {
-  color: var(--faint);
-  text-decoration: none;
+  grid-template-columns: minmax(560px, 1fr) 440px;
 }
 
 .review-center {
@@ -566,6 +474,60 @@
   flex: 1;
   overflow: auto;
   padding: 28px 36px 40px;
+}
+
+.review-nav {
+  margin: -8px 0 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.review-back {
+  margin-left: -8px;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: transparent;
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-color: var(--line-strong);
+  text-underline-offset: 3px;
+}
+
+.review-back:hover {
+  background: var(--sand);
+}
+
+.review-step {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.review-step button {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  display: grid;
+  place-items: center;
+  background: white;
+  color: var(--ink-2);
+}
+
+.review-step button:hover:not(:disabled) {
+  border-color: var(--line-strong);
+  background: var(--sand);
+}
+
+.review-step button:disabled {
+  opacity: 0.4;
 }
 
 .review-meta {
@@ -1506,6 +1468,7 @@
   top: 11px;
   right: 50%;
   width: 100%;
+  z-index: 0;
   height: 2px;
   background: var(--line);
   content: "";
@@ -1521,6 +1484,8 @@
 
 .stages i {
   position: relative;
+  /* Each connector belongs to the next step, so lift the dots above it. */
+  z-index: 1;
   width: 24px;
   height: 24px;
   border: 1px solid var(--line-strong);

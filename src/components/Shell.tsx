@@ -1,17 +1,23 @@
 import type { ReactNode } from "react"
 import {
   Bell,
-  CalendarDays,
+  Calendar,
+  ChevronLeft,
+  ChevronRight,
+  Cloud,
   FileText,
-  LayoutGrid,
   Mail,
   MessageCircle,
   MessagesSquare,
   MoreHorizontal,
+  PanelLeft,
+  Phone,
+  Plus,
   ScrollText,
   Search,
   Settings,
-  Users,
+  Sparkles,
+  UserCog,
   type LucideIcon,
 } from "lucide-react"
 import { OWNER } from "../data/scenario"
@@ -20,29 +26,35 @@ import SettingsPanel from "./SettingsPanel"
 import { Avatar, MarsMark } from "./ui"
 import UploadPanel from "./UploadPanel"
 
+// New Teams (2025): icon-only rail, app pinned with a purple indicator.
 function TeamsRail() {
-  const items: [LucideIcon, string][] = [
+  const top: [LucideIcon, string][] = [
     [Bell, "Activity"],
     [MessageCircle, "Chat"],
-    [Users, "Teams"],
-    [CalendarDays, "Calendar"],
+    [Calendar, "Calendar"],
+    [Phone, "Calls"],
+    [Cloud, "OneDrive"],
+    [Sparkles, "Copilot"],
   ]
   return (
     <aside aria-label="Microsoft Teams" className="teams-rail">
-      {items.map(([Icon, label]) => (
-        <button className="teams-rail-item" key={label}>
-          <Icon size={20} strokeWidth={1.6} />
-          <small>{label}</small>
+      {top.map(([Icon, label]) => (
+        <button aria-label={label} className="teams-rail-item" key={label} title={label}>
+          <Icon size={22} strokeWidth={1.5} />
         </button>
       ))}
-      <button className="teams-rail-item active">
-        <MarsMark size={22} />
-        <small>MARS</small>
+      <button aria-label="MARS" className="teams-rail-item active" title="MARS">
+        <MarsMark size={24} />
+      </button>
+      <button aria-label="Apps" className="teams-rail-item" title="Apps">
+        <Plus size={22} strokeWidth={1.5} />
+      </button>
+      <button aria-label="More apps" className="teams-rail-item" title="More apps">
+        <MoreHorizontal size={22} strokeWidth={1.5} />
       </button>
       <span className="teams-rail-spacer" />
-      <button className="teams-rail-item">
-        <LayoutGrid size={20} strokeWidth={1.6} />
-        <small>Apps</small>
+      <button aria-label="Admin" className="teams-rail-item" title="Admin">
+        <UserCog size={22} strokeWidth={1.5} />
       </button>
     </aside>
   )
@@ -99,31 +111,52 @@ export default function Shell({ children }: { children: ReactNode }) {
   return (
     <div className="teams-shell">
       <header className="teams-topbar">
-        <div aria-hidden className="window-controls">
-          <i />
-          <i />
-          <i />
-        </div>
-        <label className="teams-search">
-          <Search size={14} strokeWidth={1.75} />
-          <input aria-label="Search Microsoft Teams" placeholder="Search" />
-        </label>
-        <div className="teams-me">
-          <button aria-label="More">
-            <MoreHorizontal size={18} />
+        <div className="topbar-left">
+          <div aria-hidden className="window-controls">
+            <i />
+            <i />
+            <i />
+          </div>
+          <button aria-label="Toggle sidebar" className="topbar-icon">
+            <PanelLeft size={18} strokeWidth={1.5} />
           </button>
-          <Avatar name={OWNER.name} size={26} />
+        </div>
+        <div className="topbar-center">
+          <button aria-label="Back" className="topbar-icon">
+            <ChevronLeft size={18} strokeWidth={1.5} />
+          </button>
+          <button aria-label="Forward" className="topbar-icon dim">
+            <ChevronRight size={18} strokeWidth={1.5} />
+          </button>
+          <label className="teams-search">
+            <Search size={16} strokeWidth={1.75} />
+            <input aria-label="Search Microsoft Teams" placeholder="Search (⌘ E)" />
+          </label>
+        </div>
+        <div className="teams-me">
+          <button className="teams-update">
+            Update <MoreHorizontal size={16} />
+          </button>
+          <span className="presence">
+            <Avatar name={OWNER.name} size={30} />
+            <i />
+          </span>
         </div>
       </header>
       <TeamsRail />
       <section className="teams-stage">
         <header className="teams-appbar">
-          <MarsMark size={20} />
+          <span className="app-tile">
+            <MarsMark size={22} />
+          </span>
           <strong>MARS</strong>
           <nav>
-            <button className="active">Home</button>
-            <button>About</button>
+            <button className="active">MARS</button>
+            <button>Chat</button>
           </nav>
+          <button aria-label="More options" className="appbar-more">
+            <MoreHorizontal size={18} />
+          </button>
         </header>
         <div className="mars">
           <Sidebar />

@@ -6,6 +6,8 @@ import {
   Check,
   CheckCircle2,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
   ChevronUp,
   CircleDashed,
   FileQuestion,
@@ -30,7 +32,7 @@ import { emails, OWNER } from "../../data/scenario"
 import { purchaseOrders } from "../../data/source"
 import type { LineCheck, Tolerance } from "../../data/types"
 import { useInvoice, useInvoices, useMars, type InvoiceView } from "../../state/store"
-import { byPriority, groupOf, groups } from "./InvoiceList"
+import { byPriority } from "./InvoiceList"
 
 type Panel = "invoice" | "po" | "email" | "teams"
 
@@ -44,57 +46,29 @@ type Finding = {
   blocking: boolean
 }
 
-/* ---------------- left rail ---------------- */
+/* ---------------- back + prev/next ---------------- */
 
-function QueueRail({ currentId }: { currentId: string }) {
+function ReviewNav({ currentId }: { currentId: string }) {
   const { openInvoice } = useMars()
   const all = useInvoices()
   const items = all.filter((item) => item.status !== "Approved" || item.id === currentId).sort(byPriority)
   const index = items.findIndex((item) => item.id === currentId)
 
   return (
-    <aside className="rail">
-      <button className="rail-back" onClick={() => openInvoice(null)}>
+    <nav className="review-nav">
+      <button className="review-back" onClick={() => openInvoice(null)}>
         <ArrowLeft size={15} /> Invoices
       </button>
-      <div className="rail-list">
-        {groups.map((group) => {
-          const groupItems = items.filter((item) => groupOf(item.status) === group)
-          if (!groupItems.length) return null
-          return (
-            <div key={group.id}>
-              <p className="rail-group">{group.label}</p>
-              {groupItems.map((item) => (
-                <button
-                  className={`rail-item ${item.id === currentId ? "active" : ""}`}
-                  key={item.id}
-                  onClick={() => openInvoice(item.id)}
-                >
-                  <Avatar name={item.invoice.vendor} size={28} />
-                  <span className="cell-stack">
-                    <strong>{item.invoice.vendor}</strong>
-                    <small>
-                      {item.invoice.invoiceNumber} · {money(item.invoice.total)}
-                    </small>
-                  </span>
-                </button>
-              ))}
-            </div>
-          )
-        })}
-      </div>
-      <footer className="rail-foot">
-        <button disabled={index <= 0} onClick={() => openInvoice(items[index - 1].id)}>
-          Prev
+      <span className="review-step">
+        <button aria-label="Previous invoice" disabled={index <= 0} onClick={() => openInvoice(items[index - 1].id)}>
+          <ChevronLeft size={16} />
         </button>
-        <span>
-          {index + 1} of {items.length}
-        </span>
-        <button disabled={index >= items.length - 1} onClick={() => openInvoice(items[index + 1].id)}>
-          Next
+        {index + 1} of {items.length}
+        <button aria-label="Next invoice" disabled={index >= items.length - 1} onClick={() => openInvoice(items[index + 1].id)}>
+          <ChevronRight size={16} />
         </button>
-      </footer>
-    </aside>
+      </span>
+    </nav>
   )
 }
 
@@ -835,10 +809,9 @@ export default function InvoiceReview({ id }: { id: string }) {
 
   return (
     <div className="review">
-      <QueueRail currentId={id} />
-
       <section className="review-center">
         <div className="review-scroll">
+          <ReviewNav currentId={id} />
           <header className="review-head">
             <div className="review-meta">
               <StatusPill status={view.status} />

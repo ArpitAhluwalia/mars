@@ -31,9 +31,6 @@ export default function Queries() {
           <div className="split-title">
             <h1>Queries</h1>
           </div>
-          <p className="connection">
-            <i /> Questions to Sales, sent as Teams chats
-          </p>
           <SearchField onChange={setSearch} placeholder="Search vendor, invoice or rep" value={search} />
         </header>
         <div className="mail-list">
