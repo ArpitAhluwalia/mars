@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react"
+import FinOps from "./FinOps"
 
 const asset = (name: string) => `/assets/${name}`
 
@@ -126,15 +127,35 @@ function TeamsRail() {
   )
 }
 
-function ProductNav() {
+function ProductNav({
+  active,
+  onNavigate,
+}: {
+  active: "inbox" | "finops"
+  onNavigate: (view: "inbox" | "finops") => void
+}) {
   return (
     <aside aria-label="MARS navigation" className="product-nav">
       <nav aria-label="Workspace">
-        <button aria-current="page" className="product-nav-item active">
+        <button
+          aria-current={active === "inbox" ? "page" : undefined}
+          className={`product-nav-item ${active === "inbox" ? "active" : ""}`}
+          onClick={() => onNavigate("inbox")}
+        >
           <span className="nav-icon">
             <Icon name="9fca5.svg" size={28} />
           </span>
           <small>Inbox</small>
+        </button>
+        <button
+          aria-current={active === "finops" ? "page" : undefined}
+          className={`product-nav-item ${active === "finops" ? "active" : ""}`}
+          onClick={() => onNavigate("finops")}
+        >
+          <span className="nav-icon">
+            <Icon name="790e9.svg" size={28} />
+          </span>
+          <small>FinOps Queue</small>
         </button>
       </nav>
       <div className="product-nav-footer">
@@ -629,6 +650,8 @@ function Detail({
 }
 
 export default function App() {
+  const [view, setView] = useState<"inbox" | "finops">("inbox")
+  const [finOpsDetailOpen, setFinOpsDetailOpen] = useState(false)
   const [selected, setSelected] = useState(1)
   const [previewOpen, setPreviewOpen] = useState(false)
   const [syncing, setSyncing] = useState(false)
@@ -685,44 +708,61 @@ export default function App() {
           </button>
         </header>
         <div className="mars-layout">
-          <ProductNav />
+          <ProductNav
+            active={view}
+            onNavigate={(nextView) => {
+              setView(nextView)
+              if (nextView === "inbox") setFinOpsDetailOpen(false)
+            }}
+          />
           <div className="app-shell">
-            <header className="toolbar">
-              <div className="mailbox-identity">
-                <span className="page-title">
-                  <strong>Inbox</strong>
-                </span>
-                <span className="vertical-divider" />
-                <span className="connection-details">
-                  <span>
-                    Mailbox connected
-                    <Icon name="d2eff.svg" size={8} />
-                  </span>
-                  <small>invoices@meriton.com</small>
-                </span>
-              </div>
-              <div className="sync-block">
-                <button className="secondary-button" onClick={sync}>
-                  <span className={syncing ? "spin" : ""}>
-                    <Icon name="1538a.svg" size={20} />
-                  </span>
-                  {syncing ? "Syncing…" : "Sync mailbox"}
-                </button>
-                <small>Last sync: 8 Oct 2026, 10:24 AM</small>
-              </div>
-            </header>
-            <div className="workspace">
-              <Mailbox
-                mail={initialMail}
-                selected={selected}
-                setSelected={setSelected}
-              />
-              <Detail
+            {view === "inbox" ? (
+              <>
+                <header className="toolbar">
+                  <div className="mailbox-identity">
+                    <span className="page-title">
+                      <strong>Inbox</strong>
+                    </span>
+                    <span className="vertical-divider" />
+                    <span className="connection-details">
+                      <span>
+                        Mailbox connected
+                        <Icon name="d2eff.svg" size={8} />
+                      </span>
+                      <small>invoices@meriton.com</small>
+                    </span>
+                  </div>
+                  <div className="sync-block">
+                    <button className="secondary-button" onClick={sync}>
+                      <span className={syncing ? "spin" : ""}>
+                        <Icon name="1538a.svg" size={20} />
+                      </span>
+                      {syncing ? "Syncing…" : "Sync mailbox"}
+                    </button>
+                    <small>Last sync: 8 Oct 2026, 10:24 AM</small>
+                  </div>
+                </header>
+                <div className="workspace">
+                  <Mailbox
+                    mail={initialMail}
+                    selected={selected}
+                    setSelected={setSelected}
+                  />
+                  <Detail
+                    notify={notify}
+                    openPreview={() => setPreviewOpen(true)}
+                    selectedMail={selectedMail}
+                  />
+                </div>
+              </>
+            ) : (
+              <FinOps
+                closeDetail={() => setFinOpsDetailOpen(false)}
+                detailOpen={finOpsDetailOpen}
                 notify={notify}
-                openPreview={() => setPreviewOpen(true)}
-                selectedMail={selectedMail}
+                openDetail={() => setFinOpsDetailOpen(true)}
               />
-            </div>
+            )}
             {previewOpen && (
               <AttachmentDrawer close={() => setPreviewOpen(false)} />
             )}
