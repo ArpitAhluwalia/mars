@@ -1,6 +1,7 @@
 import { createContext, useContext, useMemo, useRef, useState, type ReactNode } from "react"
 import { checkLines, money, normPo, poByNumber, poLabel, suggestPos, totalWithinBand, verdictLabel, type PoSuggestion } from "../data/reconcile"
 import {
+  DEFAULT_TOLERANCE,
   emails,
   initialQueries,
   initiallyApproved,
@@ -11,9 +12,10 @@ import {
   TODAY,
   salesRep,
   seedAudit,
+  uploadSamples,
 } from "../data/scenario"
 import { ocrInvoices, purchaseOrders } from "../data/source"
-import type { AuditEvent, InvoiceStatus, LineCheck, OcrInvoice, PurchaseOrder, Query, SalesAnswer } from "../data/types"
+import type { AuditEvent, InvoiceStatus, LineCheck, OcrInvoice, PurchaseOrder, Query, SalesAnswer, Tolerance, Upload } from "../data/types"
 
 export type View = "inbox" | "invoices" | "queries" | "audit"
 
@@ -33,6 +35,9 @@ type State = {
   queries: Query[]
   approved: Record<string, string>
   audit: Record<string, AuditEvent[]>
+  tolerance: Tolerance
+  uploads: Upload[]
+  panel: "settings" | "upload" | null
   toast: string
 }
 
@@ -44,6 +49,11 @@ export type InvoiceView = {
   link: State["links"][string] | null
   checks: LineCheck[]
   openLines: LineCheck[]
+  // Over tolerance but not blocking, because overbilling protection is off.
+  warnLines: LineCheck[]
+  // Billed units with no goods receipt: blocking when 3-way match is required.
+  receiptLines: LineCheck[]
+  receiptWarnLines: LineCheck[]
   headerIssues: ("vendor" | "ref")[]
   accepted: Record<string, string>
   suggestions: PoSuggestion[]
@@ -80,9 +90,18 @@ export function deriveInvoice(state: State, id: string): InvoiceView {
   const invoice = applyEdits(byId(id), state.edits[id])
   const link = state.links[id] ?? null
   const po = link ? purchaseOrders.find((item) => item.id === link.poId) ?? null : poByNumber(invoice.poNumber)
-  const checks = po ? checkLines(invoice, po) : []
+  const tol = state.tolerance
+  const checks = po ? checkLines(invoice, po, tol) : []
   const accepted = state.accepted[id] ?? {}
-  const openLines = checks.filter((line) => line.verdict !== "match" && !accepted[line.key])
+  const exceptions = checks.filter((line) => line.verdict !== "match" && !accepted[line.key])
+  const openLines = tol.block ? exceptions : []
+  const warnLines = tol.block ? [] : exceptions
+  // A quantity difference already covers units that never arrived, so don't count them twice.
+  const unreceived = checks.filter(
+    (line) => line.unreceived > 0 && !["quantity", "price-quantity"].includes(line.verdict) && !accepted[line.key],
+  )
+  const receiptLines = tol.threeWay ? unreceived : []
+  const receiptWarnLines = tol.threeWay ? [] : unreceived
   const headerIssues: InvoiceView["headerIssues"] = []
   if (po && po.vendor !== invoice.vendor && !accepted.vendor) headerIssues.push("vendor")
   if (po && normPo(po.poNumber) !== normPo(invoice.poNumber) && !accepted.ref) headerIssues.push("ref")
@@ -123,6 +142,14 @@ export function deriveInvoice(state: State, id: string): InvoiceView {
       .slice(0, 2)
       .map((line) => `${line.description.split(",")[0]}: ${verdictLabel[line.verdict].toLowerCase()}`)
       .join(" · ")
+  } else if (receiptLines.length) {
+    status = "Needs review"
+    const units = receiptLines.reduce((total, line) => total + line.unreceived, 0)
+    finding = `${units} unit${units > 1 ? "s" : ""} billed but not received`
+    support = receiptLines
+      .slice(0, 2)
+      .map((line) => `${line.description.split(",")[0]}: ${line.received} of ${line.invoice.quantity} received`)
+      .join(" · ")
   } else if (headerIssues.length) {
     status = "Needs review"
     finding = headerIssues.includes("vendor") ? "Vendor name differs on PO" : `Invoice cites ${invoice.poNumber}`
@@ -133,7 +160,7 @@ export function deriveInvoice(state: State, id: string): InvoiceView {
       ? "Exceptions resolved"
       : po.standing
         ? "Within standing order balance"
-        : checks.every((line) => line.exact) && totalWithinBand(invoice, po)
+        : checks.every((line) => line.exact) && totalWithinBand(invoice, po, tol)
           ? "Exact match to PO"
           : "Matched within tolerance"
     support = poLabel(po.poNumber)
@@ -147,6 +174,9 @@ export function deriveInvoice(state: State, id: string): InvoiceView {
     link,
     checks,
     openLines,
+    warnLines,
+    receiptLines,
+    receiptWarnLines,
     headerIssues,
     accepted,
     suggestions,
@@ -174,12 +204,18 @@ function initialState(): State {
     queries: [],
     approved: initiallyApproved,
     audit: {},
+    tolerance: DEFAULT_TOLERANCE,
+    uploads: [],
+    panel: null,
     toast: "",
   }
   // Seed queries with the lines that are actually flagged.
   base.queries = initialQueries.map((query) => ({
     ...query,
-    lineKeys: deriveInvoice(base, query.invoiceId).openLines.map((line) => line.key),
+    lineKeys: (() => {
+      const view = deriveInvoice(base, query.invoiceId)
+      return [...view.openLines, ...view.receiptLines].map((line) => line.key)
+    })(),
   }))
   for (const id of initiallyQueued) base.audit[id] = initialAudit(base, id)
   return base
@@ -333,7 +369,7 @@ function useMarsState() {
         rep: view.rep.name,
         sentAt: now(),
         message,
-        lineKeys: view.openLines.map((line) => line.key),
+        lineKeys: [...view.openLines, ...view.receiptLines].map((line) => line.key),
       }
       update((draft) => {
         draft.queries = [...draft.queries, query]
@@ -362,6 +398,40 @@ function useMarsState() {
           ],
         }
       }),
+    openPanel: (panel: State["panel"]) => update((draft) => void (draft.panel = panel)),
+    setTolerance: (tolerance: Tolerance) => update((draft) => void (draft.tolerance = tolerance)),
+    // Simulates the dev pipeline: upload, split pages, OCR each invoice, match POs.
+    startUpload: (sample: number, file?: string) => {
+      const source = uploadSamples[sample]
+      const id = `up-${Date.now()}`
+      const upload: Upload = {
+        id,
+        file: file ?? source.file,
+        pages: source.pages,
+        stage: 0,
+        invoiceIds: source.invoiceIds,
+        skipped: source.skipped,
+      }
+      update((draft) => void (draft.uploads = [upload, ...draft.uploads]))
+      const advance = (stage: number) =>
+        window.setTimeout(() => {
+          update((draft) => {
+            draft.uploads = draft.uploads.map((item) => (item.id === id ? { ...item, stage } : item))
+            if (stage === 4) {
+              draft.queued = [...draft.queued, ...upload.invoiceIds.filter((invoiceId) => !draft.queued.includes(invoiceId))]
+              for (const invoiceId of upload.invoiceIds) draft.audit = { ...draft.audit, [invoiceId]: initialAudit(draft, invoiceId) }
+            }
+          })
+          if (stage < 4) advance(stage + 1)
+          else
+            notify(
+              upload.invoiceIds.length
+                ? `${upload.invoiceIds.length} invoices added from ${upload.file}`
+                : `No invoices found in ${upload.file}`,
+            )
+        }, 900)
+      advance(1)
+    },
     remind: (queryIds: string[]) =>
       update((draft) => {
         for (const query of draft.queries.filter((item) => queryIds.includes(item.id))) {

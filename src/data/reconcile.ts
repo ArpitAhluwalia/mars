@@ -1,10 +1,12 @@
+import { DEFAULT_TOLERANCE, goodsReceipts } from "./scenario"
 import { purchaseOrders } from "./source"
-import type { LineCheck, LineItem, OcrInvoice, PurchaseOrder } from "./types"
+import type { LineCheck, LineItem, OcrInvoice, PurchaseOrder, Tolerance } from "./types"
 
-// Tolerance bands from the dev build: a line passes within ±2% or $5,
-// the invoice total within ±1% or $25.
-const LINE_BAND = { pct: 0.02, abs: 5 }
-const TOTAL_BAND = { pct: 0.01, abs: 25 }
+const lineBand = (tol: Tolerance) => ({ pct: tol.linePct / 100, abs: tol.lineAbs })
+const totalBand = (tol: Tolerance) => ({ pct: tol.totalPct / 100, abs: tol.totalAbs })
+
+export const receiptFor = (po: PurchaseOrder | null) =>
+  po ? (goodsReceipts.find((receipt) => normPo(receipt.po) === normPo(po.poNumber)) ?? null) : null
 
 export const money = (value: number | null | undefined, signed = false) => {
   if (value === null || value === undefined) return "—"
@@ -71,8 +73,10 @@ function pairLine(line: LineItem, poLines: LineItem[], used: Set<number>) {
   return poLines[best]
 }
 
-export function checkLines(invoice: OcrInvoice, po: PurchaseOrder | null): LineCheck[] {
+export function checkLines(invoice: OcrInvoice, po: PurchaseOrder | null, tol: Tolerance = DEFAULT_TOLERANCE): LineCheck[] {
   const used = new Set<number>()
+  const receipt = receiptFor(po)
+  const LINE_BAND = lineBand(tol)
   return invoice.lines.map((line, index) => {
     const key = `${index}`
     const matched = po ? pairLine(line, po.lines, used) : null
@@ -85,8 +89,18 @@ export function checkLines(invoice: OcrInvoice, po: PurchaseOrder | null): LineC
         verdict: "not-on-po",
         exact: false,
         difference: lineAmount(line),
+        received: null,
+        receiptId: null,
+        unreceived: 0,
       }
     }
+    // 3-way match: a standing order receives each release as it's billed; otherwise
+    // the receipt confirms what the PO ordered unless it records a shortfall.
+    const isService = !receipt || receipt.services?.includes(matched.description)
+    const received = isService
+      ? null
+      : (receipt.received?.[matched.description] ?? (po?.standing ? (line.quantity ?? 0) : (matched.quantity ?? 0)))
+    const unreceived = received === null ? 0 : Math.max(0, (line.quantity ?? 0) - received)
     // A standing order is drawn down over many invoices, so only price is
     // compared line by line; the balance check covers quantity.
     const quantityOff = !po?.standing && (line.quantity ?? 0) !== (matched.quantity ?? 0)
@@ -115,14 +129,20 @@ export function checkLines(invoice: OcrInvoice, po: PurchaseOrder | null): LineC
         (line.unitPrice ?? 0) === (matched.unitPrice ?? 0) &&
         (!!po?.standing || (line.quantity ?? 0) === (matched.quantity ?? 0)),
       difference: billed - expected,
+      received,
+      receiptId: received === null ? null : receipt!.id,
+      unreceived,
     }
   })
 }
 
-export const TOLERANCE_NOTE = "Lines ±2% or $5 · total ±1% or $25"
+export const toleranceNote = (tol: Tolerance = DEFAULT_TOLERANCE) =>
+  `Lines ±${tol.linePct}% or $${tol.lineAbs} · total ±${tol.totalPct}% or $${tol.totalAbs}`
 
-export const totalWithinBand = (invoice: OcrInvoice, po: PurchaseOrder) =>
-  withinBand(invoice.subtotal ?? 0, po.subtotal ?? 0, TOTAL_BAND)
+export const TOLERANCE_NOTE = toleranceNote()
+
+export const totalWithinBand = (invoice: OcrInvoice, po: PurchaseOrder, tol: Tolerance = DEFAULT_TOLERANCE) =>
+  withinBand(invoice.subtotal ?? 0, po.subtotal ?? 0, totalBand(tol))
 
 export const verdictLabel: Record<LineCheck["verdict"], string> = {
   match: "Matched",
@@ -204,6 +224,8 @@ export function suggestPos(invoice: OcrInvoice): PoSuggestion[] {
       return distance <= 1 || (distance <= 3 && vendorSimilarity(invoice.vendor, po.vendor) >= 0.5)
     })
     .map((po) => scorePo(invoice, po))
+    // A weak guess is worse than none: below 70% the PO is reported missing.
+    .filter((suggestion) => suggestion.score >= 70)
     .sort((a, b) => b.score - a.score)
     .slice(0, 3)
 }

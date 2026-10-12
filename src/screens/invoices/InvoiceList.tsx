@@ -208,7 +208,7 @@ function GroupRow({ group, items }: { group: (typeof groups)[number]; items: Inv
 }
 
 export default function InvoiceList() {
-  const { openInvoice, openQuery, notify } = useMars()
+  const { openInvoice, openQuery, openPanel } = useMars()
   const invoices = useInvoices()
   const [tab, setTab] = useState<"all" | GroupId>("all")
   const [query, setQuery] = useState("")
@@ -233,7 +233,7 @@ export default function InvoiceList() {
       <div>
         <header className="flush-head">
           <h1>Invoices</h1>
-          <Button icon={Upload} onClick={() => notify("Drop a PDF to upload an invoice")} size="sm" variant="ghost">
+          <Button icon={Upload} onClick={() => openPanel("upload")} size="sm" variant="ghost">
             Upload
           </Button>
         </header>

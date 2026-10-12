@@ -52,6 +52,39 @@ export type LineCheck = {
   // A "match" can still differ by a few cents or units inside the tolerance band.
   exact: boolean
   difference: number
+  // 3-way match: what the goods receipt says arrived. null means a service line (2-way only).
+  received: number | null
+  receiptId: string | null
+  unreceived: number
+}
+
+export type Tolerance = {
+  linePct: number
+  lineAbs: number
+  totalPct: number
+  totalAbs: number
+  // Over tolerance blocks approval (Ramp's "overbilling protection"); off, it only warns.
+  block: boolean
+  // Billed units must have a goods receipt before approval.
+  threeWay: boolean
+}
+
+export type GoodsReceipt = {
+  po: string
+  id: string
+  date: string
+  // Units received where they differ from the PO; everything else arrived in full.
+  received?: Record<string, number>
+  services?: string[]
+}
+
+export type Upload = {
+  id: string
+  file: string
+  pages: number
+  stage: number
+  invoiceIds: string[]
+  skipped: number
 }
 
 export type SalesAnswer = "approve" | "correct"

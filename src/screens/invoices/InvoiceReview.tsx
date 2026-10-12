@@ -14,6 +14,8 @@ import {
   Link2,
   MessageSquareReply,
   MessagesSquare,
+  PackageCheck,
+  PackageX,
   Pencil,
   Search,
   Sparkles,
@@ -23,10 +25,10 @@ import ActivityFeed from "../../components/ActivityFeed"
 import DocumentViewer, { EmailPaper } from "../../components/DocumentViewer"
 import TeamsThread from "../../components/TeamsThread"
 import { Avatar, Button, MarsAvatar, Pill, SearchField, StatusPill, Tabs, type Tone } from "../../components/ui"
-import { drawdown, money, poLabel, qty, scorePo, searchPos, shortDate, TOLERANCE_NOTE, verdictLabel, type PoSuggestion } from "../../data/reconcile"
+import { drawdown, money, poLabel, qty, receiptFor, scorePo, searchPos, shortDate, toleranceNote, verdictLabel, type PoSuggestion } from "../../data/reconcile"
 import { emails, OWNER } from "../../data/scenario"
 import { purchaseOrders } from "../../data/source"
-import type { LineCheck } from "../../data/types"
+import type { LineCheck, Tolerance } from "../../data/types"
 import { useInvoice, useInvoices, useMars, type InvoiceView } from "../../state/store"
 import { byPriority, groupOf, groups } from "./InvoiceList"
 
@@ -99,7 +101,8 @@ function QueueRail({ currentId }: { currentId: string }) {
 /* ---------------- MARS review ---------------- */
 
 function useFindings(view: InvoiceView, actions: { openTeams: () => void; focusSearch: () => void; toLines: () => void }) {
-  const { linkPo, acceptLine, applyReply, notify } = useMars()
+  const { state, linkPo, acceptLine, applyReply, notify } = useMars()
+  const note = toleranceNote(state.tolerance)
   const findings: Finding[] = []
   const { po, invoice, query } = view
   const pending = query && !query.applied ? query : null
@@ -269,6 +272,63 @@ function useFindings(view: InvoiceView, actions: { openTeams: () => void; focusS
     })
   }
 
+  const warn = view.warnLines.filter((line) => !withSales.has(line.key))
+  if (warn.length) {
+    const net = warn.reduce((total, line) => total + line.difference, 0)
+    findings.push({
+      key: "warn",
+      tone: "warn",
+      icon: AlertCircle,
+      title: `${warn.length} line${warn.length > 1 ? "s" : ""} over tolerance · ${money(net, true)}`,
+      detail: "Approval isn't blocked because overbilling protection is off in matching rules.",
+      actions: (
+        <Button onClick={actions.toLines} size="sm">
+          Review lines
+        </Button>
+      ),
+      blocking: false,
+    })
+  }
+
+  const short = view.receiptLines.filter((line) => !withSales.has(line.key))
+  if (short.length) {
+    const units = short.reduce((total, line) => total + line.unreceived, 0)
+    findings.push({
+      key: "receipt",
+      tone: "danger",
+      icon: PackageX,
+      title: `${units} unit${units > 1 ? "s" : ""} billed but not received`,
+      detail: short
+        .map((line) => `${line.description.split(",")[0]}: ${line.received} of ${line.invoice.quantity} on ${line.receiptId}`)
+        .join(" · "),
+      actions: (
+        <>
+          {!pending && (
+            <Button icon={MessagesSquare} onClick={actions.openTeams} size="sm" variant="primary">
+              Ask Sales
+            </Button>
+          )}
+          <Button onClick={actions.toLines} size="sm">
+            Resolve lines
+          </Button>
+        </>
+      ),
+      blocking: true,
+    })
+  }
+
+  if (view.receiptWarnLines.length) {
+    const units = view.receiptWarnLines.reduce((total, line) => total + line.unreceived, 0)
+    findings.push({
+      key: "receipt-warn",
+      tone: "info",
+      icon: PackageX,
+      title: `${units} billed unit${units > 1 ? "s" : ""} not on the goods receipt yet`,
+      detail: "3-way match is off in matching rules, so this doesn't block approval.",
+      blocking: false,
+    })
+  }
+
   const tolerance = view.checks.filter((line) => line.verdict === "match" && !line.exact)
   if (tolerance.length) {
     const net = tolerance.reduce((total, line) => total + line.difference, 0)
@@ -284,12 +344,13 @@ function useFindings(view: InvoiceView, actions: { openTeams: () => void; focusS
 
   if (!findings.some((finding) => finding.blocking) && po) {
     const exact = view.checks.filter((line) => line.exact).length
+    const receipt = receiptFor(po)
     findings.unshift({
       key: "ready",
       tone: "success",
       icon: CheckCircle2,
       title: po.standing ? `Release fits within ${poLabel(po.poNumber)}` : `Everything matches ${poLabel(po.poNumber)}`,
-      detail: `${exact} of ${view.checks.length} lines exact${view.checks.some((line) => line.verdict !== "match") ? " · exceptions resolved" : ""} · ${TOLERANCE_NOTE.toLowerCase()}`,
+      detail: `${exact} of ${view.checks.length} lines exact${view.checks.some((line) => line.verdict !== "match") ? " · exceptions resolved" : ""} · ${receipt ? `billed units received on ${receipt.id}` : "services, matched 2-way"} · ${note.toLowerCase()}`,
       blocking: false,
     })
   }
@@ -403,6 +464,9 @@ function PoSection({ view, searchRef }: { view: InvoiceView; searchRef: React.Re
             <Pill icon={view.link ? Sparkles : Check} tone={view.link ? "accent" : "success"}>
               {view.link ? view.link.how.replace(/^Found by search for .*/, "Found by search").replace(/^Changed from .*/, "Changed manually") : "PO number matches"}
             </Pill>
+            <Pill icon={receiptFor(po) ? PackageCheck : undefined} tone="neutral">
+              {receiptFor(po) ? `3-way · ${receiptFor(po)!.id}` : "2-way · services"}
+            </Pill>
           </div>
           {balance && (
             <div className="drawdown">
@@ -450,11 +514,30 @@ function PoSection({ view, searchRef }: { view: InvoiceView; searchRef: React.Re
 
 /* ---------------- line matching ---------------- */
 
-const lineTone = (line: LineCheck, accepted?: string, withSales?: boolean): [Tone, string] => {
+// A line can be off against the PO (2-way) or short against the goods receipt (3-way).
+const isShort = (line: LineCheck) => line.unreceived > 0 && !["quantity", "price-quantity"].includes(line.verdict)
+
+const lineTone = (line: LineCheck, tol: Tolerance, accepted?: string, withSales?: boolean): [Tone, string] => {
   if (accepted) return ["neutral", "Accepted"]
-  if (withSales && line.verdict !== "match") return ["sales", "With Sales"]
-  if (line.verdict === "match") return line.exact ? ["success", "Matched"] : ["warn", "Within tolerance"]
-  return ["danger", verdictLabel[line.verdict]]
+  if (withSales && (line.verdict !== "match" || isShort(line))) return ["sales", "With Sales"]
+  if (line.verdict !== "match") return [tol.block ? "danger" : "warn", verdictLabel[line.verdict]]
+  if (isShort(line)) return [tol.threeWay ? "danger" : "warn", "Not received"]
+  return line.exact ? ["success", "Matched"] : ["warn", "Within tolerance"]
+}
+
+function ReceivedCell({ line }: { line: LineCheck }) {
+  if (line.received === null) return <span className="muted">Service</span>
+  if (line.unreceived > 0) {
+    return (
+      <span className="cell-stack">
+        <strong className="variance">
+          {qty(line.received)} of {qty(line.invoice.quantity)}
+        </strong>
+        <small>{qty(line.unreceived)} short</small>
+      </span>
+    )
+  }
+  return <span>{qty(line.received)}</span>
 }
 
 function LineResolver({ view, line, onAskSales, close }: { view: InvoiceView; line: LineCheck; onAskSales: () => void; close: () => void }) {
@@ -561,11 +644,12 @@ function LineMatching({
   setExpanded: (key: string | null) => void
   onAskSales: () => void
 }) {
+  const { state, openPanel } = useMars()
   const [exceptionsOnly, setExceptionsOnly] = useState(false)
   const { po, invoice } = view
   if (!po) return null
   const withSales = new Set(view.query && !view.query.applied ? view.query.lineKeys : [])
-  const rows = view.checks.filter((line) => !exceptionsOnly || line.verdict !== "match" || !line.exact)
+  const rows = view.checks.filter((line) => !exceptionsOnly || line.verdict !== "match" || !line.exact || line.unreceived > 0)
   const poSubtotal = po.standing
     ? view.checks.reduce((total, line) => total + (line.invoice.quantity ?? 0) * (line.po?.unitPrice ?? 0), 0)
     : (po.subtotal ?? 0)
@@ -576,9 +660,12 @@ function LineMatching({
       <header className="section-head">
         <h2>Line matching</h2>
         <div className="section-aside">
-          <span title={`Tolerance: ${TOLERANCE_NOTE}`}>
+          <span title={`Tolerance: ${toleranceNote(state.tolerance)}`}>
             {exact} of {view.checks.length} exact
           </span>
+          <button className="link" onClick={() => openPanel("settings")} type="button">
+            Rules
+          </button>
           <label className="toggle">
             <input checked={exceptionsOnly} onChange={(event) => setExceptionsOnly(event.target.checked)} type="checkbox" />
             <i />
@@ -593,7 +680,7 @@ function LineMatching({
               <th>Item</th>
               <th className="right">Invoiced</th>
               <th className="right">{po.standing ? "PO price" : "Ordered"}</th>
-              <th className="right">Variance</th>
+              <th className="right">Received</th>
               <th>Match</th>
             </tr>
           </thead>
@@ -601,8 +688,8 @@ function LineMatching({
             {rows.map((line) => {
               const accepted = view.accepted[line.key]
               const sales = withSales.has(line.key)
-              const [tone, label] = lineTone(line, accepted, sales)
-              const actionable = line.verdict !== "match" && !accepted && !sales && view.status !== "Approved"
+              const [tone, label] = lineTone(line, state.tolerance, accepted, sales)
+              const actionable = (line.verdict !== "match" || isShort(line)) && !accepted && !sales && view.status !== "Approved"
               const isOpen = expanded === line.key
               return [
                 <tr className={`line ${tone === "danger" ? "exception" : ""} ${isOpen ? "open" : ""}`} key={line.key}>
@@ -634,10 +721,10 @@ function LineMatching({
                       <span className="muted">Not on PO</span>
                     )}
                   </td>
-                  <td className={`right num ${tone === "danger" ? "variance" : "muted"}`}>
-                    {Math.abs(line.difference) < 0.005 ? "—" : money(line.difference, true)}
+                  <td className="right num">
+                    <ReceivedCell line={line} />
                   </td>
-                  <td>
+                  <td className="match-cell">
                     {actionable ? (
                       <button
                         aria-expanded={isOpen}
@@ -650,6 +737,11 @@ function LineMatching({
                       </button>
                     ) : (
                       <Pill tone={tone}>{label}</Pill>
+                    )}
+                    {Math.abs(line.difference) >= 0.005 && (
+                      <small className={`num ${tone === "danger" && line.verdict !== "match" ? "variance" : "muted"}`}>
+                        {money(line.difference, true)}
+                      </small>
                     )}
                   </td>
                 </tr>,
@@ -670,12 +762,12 @@ function LineMatching({
               <td>Subtotal</td>
               <td className="right num">{money(invoice.subtotal)}</td>
               <td className="right num">{money(poSubtotal)}</td>
-              <td className={`right num ${view.openLines.length ? "variance" : "muted"}`}>{money((invoice.subtotal ?? 0) - poSubtotal, true)}</td>
               <td />
+              <td className={`num ${view.openLines.length ? "variance" : "muted"}`}>{money((invoice.subtotal ?? 0) - poSubtotal, true)}</td>
             </tr>
             <tr>
               <td>
-                Tax <span className="muted">· tolerance {TOLERANCE_NOTE}</span>
+                Tax <span className="muted">· tolerance {toleranceNote(state.tolerance)}</span>
               </td>
               <td className="right num">{money(invoice.tax)}</td>
               <td className="right num muted">{po.standing ? "—" : money(po.tax)}</td>
@@ -721,7 +813,7 @@ export default function InvoiceReview({ id }: { id: string }) {
     toLines: () => {
       setTab("overview")
       linesRef.current?.scrollIntoView({ behavior: "smooth", block: "start" })
-      const first = view.openLines.find((line) => !(view.query && !view.query.applied && view.query.lineKeys.includes(line.key)))
+      const first = [...view.openLines, ...view.receiptLines, ...view.warnLines].find((line) => !(view.query && !view.query.applied && view.query.lineKeys.includes(line.key)))
       if (first) setExpanded(first.key)
     },
   })

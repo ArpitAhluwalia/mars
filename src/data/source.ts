@@ -1556,5 +1556,396 @@ export const ocrInvoices: OcrInvoice[] = [
       "tax_amount": 0.983,
       "total_amount": 0.502
     }
+  },
+  {
+    "id": "ns-4001",
+    "vendor": "Northstar Office Supplies",
+    "vendorAddress": "12, Market Street, Seattle, WA, 98101",
+    "date": "2026-09-02",
+    "poNumber": "PO-41001",
+    "subtotal": 2945.0,
+    "tax": 242.96,
+    "discount": null,
+    "total": 3187.96,
+    "lines": [
+      {
+        "description": "Ergonomic wireless keyboard",
+        "quantity": 2.0,
+        "unit": null,
+        "unitPrice": 79.0,
+        "lineTotal": 158.0
+      },
+      {
+        "description": "USB-C docking station, 12-port",
+        "quantity": 3.0,
+        "unit": null,
+        "unitPrice": 189.0,
+        "lineTotal": 567.0
+      },
+      {
+        "description": "27-inch QHD business monitor",
+        "quantity": 4.0,
+        "unit": null,
+        "unitPrice": 329.0,
+        "lineTotal": 1316.0
+      },
+      {
+        "description": "Noise-cancelling office headset",
+        "quantity": 5.0,
+        "unit": null,
+        "unitPrice": 116.0,
+        "lineTotal": 580.0
+      },
+      {
+        "description": "Adjustable aluminium laptop stand",
+        "quantity": 6.0,
+        "unit": null,
+        "unitPrice": 54.0,
+        "lineTotal": 324.0
+      }
+    ],
+    "invoiceNumber": "NS-TEST-4001",
+    "sourceFile": "CU-004_all_invoices_mixed_lengths.pdf",
+    "sourcePages": "1-1",
+    "confidence": {
+      "vendor_name": 0.803,
+      "vendor_address": 0.917,
+      "invoice_number": 0.975,
+      "invoice_date": 0.94,
+      "po_number": 0.972,
+      "subtotal": 0.981,
+      "tax_amount": 0.978,
+      "total_amount": 0.977
+    }
+  },
+  {
+    "id": "ns-4002",
+    "vendor": "Northstar Office Supplies",
+    "vendorAddress": "12, Market Street, Seattle, WA, 98101",
+    "date": "2026-09-06",
+    "poNumber": "PO-41022",
+    "subtotal": 12083.5,
+    "tax": 996.89,
+    "discount": null,
+    "total": 13080.39,
+    "lines": [
+      {
+        "description": "Noise-cancelling office headset",
+        "quantity": 5.0,
+        "unit": null,
+        "unitPrice": 116.0,
+        "lineTotal": 580.0
+      },
+      {
+        "description": "Adjustable aluminium laptop stand",
+        "quantity": 6.0,
+        "unit": null,
+        "unitPrice": 54.0,
+        "lineTotal": 324.0
+      },
+      {
+        "description": "Full-HD conference webcam",
+        "quantity": 7.0,
+        "unit": null,
+        "unitPrice": 92.0,
+        "lineTotal": 644.0
+      },
+      {
+        "description": "Secure document shredder",
+        "quantity": 8.0,
+        "unit": null,
+        "unitPrice": 248.0,
+        "lineTotal": 1984.0
+      },
+      {
+        "description": "A4 recycled copier paper, case",
+        "quantity": 9.0,
+        "unit": null,
+        "unitPrice": 41.5,
+        "lineTotal": 373.5
+      },
+      {
+        "description": "Black toner cartridge, high yield",
+        "quantity": 10.0,
+        "unit": null,
+        "unitPrice": 137.0,
+        "lineTotal": 1370.0
+      },
+      {
+        "description": "Mesh-back task chair",
+        "quantity": 3.0,
+        "unit": null,
+        "unitPrice": 286.0,
+        "lineTotal": 858.0
+      },
+      {
+        "description": "Mobile pedestal, three drawer",
+        "quantity": 4.0,
+        "unit": null,
+        "unitPrice": 214.0,
+        "lineTotal": 856.0
+      },
+      {
+        "description": "Height-adjustable desk converter",
+        "quantity": 5.0,
+        "unit": null,
+        "unitPrice": 318.0,
+        "lineTotal": 1590.0
+      },
+      {
+        "description": "Surge-protected power strip",
+        "quantity": 6.0,
+        "unit": null,
+        "unitPrice": 28.5,
+        "lineTotal": 171.0
+      },
+      {
+        "description": "Encrypted USB drive, 128 GB",
+        "quantity": 7.0,
+        "unit": null,
+        "unitPrice": 67.0,
+        "lineTotal": 469.0
+      },
+      {
+        "description": "Thermal shipping-label roll",
+        "quantity": 8.0,
+        "unit": null,
+        "unitPrice": 36.0,
+        "lineTotal": 288.0
+      },
+      {
+        "description": "Inventory barcode scanner",
+        "quantity": 9.0,
+        "unit": null,
+        "unitPrice": 154.0,
+        "lineTotal": 1386.0
+      },
+      {
+        "description": "Whiteboard starter kit",
+        "quantity": 2.0,
+        "unit": null,
+        "unitPrice": 63.0,
+        "lineTotal": 126.0
+      },
+      {
+        "description": "Visitor badge supplies, carton",
+        "quantity": 3.0,
+        "unit": null,
+        "unitPrice": 74.0,
+        "lineTotal": 222.0
+      },
+      {
+        "description": "Desktop cable-management tray",
+        "quantity": 4.0,
+        "unit": null,
+        "unitPrice": 32.0,
+        "lineTotal": 128.0
+      },
+      {
+        "description": "Executive notebook, pack of 12",
+        "quantity": 5.0,
+        "unit": null,
+        "unitPrice": 48.0,
+        "lineTotal": 240.0
+      },
+      {
+        "description": "Ergonomic wireless keyboard",
+        "quantity": 6.0,
+        "unit": null,
+        "unitPrice": 79.0,
+        "lineTotal": 474.0
+      }
+    ],
+    "invoiceNumber": "NS-TEST-4002",
+    "sourceFile": "CU-004_all_invoices_mixed_lengths.pdf",
+    "sourcePages": "2-4",
+    "confidence": {
+      "vendor_name": 0.917,
+      "vendor_address": 0.917,
+      "invoice_number": 0.969,
+      "invoice_date": 0.939,
+      "po_number": 0.971,
+      "subtotal": 0.975,
+      "tax_amount": 0.97,
+      "total_amount": 0.973
+    }
+  },
+  {
+    "id": "ns-4003",
+    "vendor": "Northstar Office Supplies",
+    "vendorAddress": "12, Market Street, Seattle, WA, 98101",
+    "date": "2026-09-11",
+    "poNumber": "PO-41039",
+    "subtotal": 5975.5,
+    "tax": 492.98,
+    "discount": null,
+    "total": 6468.48,
+    "lines": [
+      {
+        "description": "Mesh-back task chair",
+        "quantity": 2.0,
+        "unit": null,
+        "unitPrice": 286.0,
+        "lineTotal": 572.0
+      },
+      {
+        "description": "Mobile pedestal, three drawer",
+        "quantity": 3.0,
+        "unit": null,
+        "unitPrice": 214.0,
+        "lineTotal": 642.0
+      },
+      {
+        "description": "Height-adjustable desk converter",
+        "quantity": 4.0,
+        "unit": null,
+        "unitPrice": 318.0,
+        "lineTotal": 1272.0
+      },
+      {
+        "description": "Surge-protected power strip",
+        "quantity": 5.0,
+        "unit": null,
+        "unitPrice": 28.5,
+        "lineTotal": 142.5
+      },
+      {
+        "description": "Encrypted USB drive, 128 GB",
+        "quantity": 6.0,
+        "unit": null,
+        "unitPrice": 67.0,
+        "lineTotal": 402.0
+      },
+      {
+        "description": "Thermal shipping-label roll",
+        "quantity": 7.0,
+        "unit": null,
+        "unitPrice": 36.0,
+        "lineTotal": 252.0
+      },
+      {
+        "description": "Inventory barcode scanner",
+        "quantity": 8.0,
+        "unit": null,
+        "unitPrice": 154.0,
+        "lineTotal": 1232.0
+      },
+      {
+        "description": "Whiteboard starter kit",
+        "quantity": 10.0,
+        "unit": null,
+        "unitPrice": 63.0,
+        "lineTotal": 630.0
+      },
+      {
+        "description": "Visitor badge supplies, carton",
+        "quantity": 2.0,
+        "unit": null,
+        "unitPrice": 74.0,
+        "lineTotal": 148.0
+      },
+      {
+        "description": "Desktop cable-management tray",
+        "quantity": 3.0,
+        "unit": null,
+        "unitPrice": 32.0,
+        "lineTotal": 96.0
+      },
+      {
+        "description": "Executive notebook, pack of 12",
+        "quantity": 4.0,
+        "unit": null,
+        "unitPrice": 48.0,
+        "lineTotal": 192.0
+      },
+      {
+        "description": "Ergonomic wireless keyboard",
+        "quantity": 5.0,
+        "unit": null,
+        "unitPrice": 79.0,
+        "lineTotal": 395.0
+      }
+    ],
+    "invoiceNumber": "NS-TEST-4003",
+    "sourceFile": "CU-004_all_invoices_mixed_lengths.pdf",
+    "sourcePages": "5-6",
+    "confidence": {
+      "vendor_name": 0.519,
+      "vendor_address": 0.903,
+      "invoice_number": 0.974,
+      "invoice_date": 0.939,
+      "po_number": 0.975,
+      "subtotal": 0.976,
+      "tax_amount": 0.975,
+      "total_amount": 0.975
+    }
+  },
+  {
+    "id": "ns-4004",
+    "vendor": "Northstar Office Supplies",
+    "vendorAddress": "12, Market Street, Seattle, WA, 98101",
+    "date": "2026-09-16",
+    "poNumber": "PO-41044",
+    "subtotal": 2999.0,
+    "tax": 247.42,
+    "discount": null,
+    "total": 3246.42,
+    "lines": [
+      {
+        "description": "Thermal shipping-label roll",
+        "quantity": 7.0,
+        "unit": null,
+        "unitPrice": 36.0,
+        "lineTotal": 252.0
+      },
+      {
+        "description": "Inventory barcode scanner",
+        "quantity": 8.0,
+        "unit": null,
+        "unitPrice": 154.0,
+        "lineTotal": 1232.0
+      },
+      {
+        "description": "Whiteboard starter kit",
+        "quantity": 9.0,
+        "unit": null,
+        "unitPrice": 63.0,
+        "lineTotal": 567.0
+      },
+      {
+        "description": "Visitor badge supplies, carton",
+        "quantity": 10.0,
+        "unit": null,
+        "unitPrice": 74.0,
+        "lineTotal": 740.0
+      },
+      {
+        "description": "Desktop cable-management tray",
+        "quantity": 2.0,
+        "unit": null,
+        "unitPrice": 32.0,
+        "lineTotal": 64.0
+      },
+      {
+        "description": "Executive notebook, pack of 12",
+        "quantity": 3.0,
+        "unit": null,
+        "unitPrice": 48.0,
+        "lineTotal": 144.0
+      }
+    ],
+    "invoiceNumber": "NS-TEST-4004",
+    "sourceFile": "CU-004_all_invoices_mixed_lengths.pdf",
+    "sourcePages": "7-7",
+    "confidence": {
+      "vendor_name": 0.809,
+      "vendor_address": 0.909,
+      "invoice_number": 0.969,
+      "invoice_date": 0.938,
+      "po_number": 0.975,
+      "subtotal": 0.977,
+      "tax_amount": 0.975,
+      "total_amount": 0.976
+    }
   }
 ]

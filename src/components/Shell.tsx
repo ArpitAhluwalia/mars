@@ -16,7 +16,9 @@ import {
 } from "lucide-react"
 import { OWNER } from "../data/scenario"
 import { useInvoices, useMars, type View } from "../state/store"
+import SettingsPanel from "./SettingsPanel"
 import { Avatar, MarsMark } from "./ui"
+import UploadPanel from "./UploadPanel"
 
 function TeamsRail() {
   const items: [LucideIcon, string][] = [
@@ -47,7 +49,7 @@ function TeamsRail() {
 }
 
 function Sidebar() {
-  const { state, go } = useMars()
+  const { state, go, openPanel } = useMars()
   const invoices = useInvoices()
   const toReview = invoices.filter((item) => !["With Sales", "Approved"].includes(item.status)).length
   const replies = state.queries.filter((query) => query.reply && !query.applied).length
@@ -78,7 +80,7 @@ function Sidebar() {
         ))}
       </nav>
       <div className="sidebar-foot">
-        <button className="side-utility">
+        <button className={`side-utility ${state.panel === "settings" ? "active" : ""}`} onClick={() => openPanel("settings")}>
           <span className="side-icon">
             <Settings size={19} strokeWidth={1.6} />
           </span>
@@ -128,6 +130,8 @@ export default function Shell({ children }: { children: ReactNode }) {
           <main className="mars-main">{children}</main>
         </div>
       </section>
+      {state.panel === "settings" && <SettingsPanel />}
+      {state.panel === "upload" && <UploadPanel />}
       {state.toast && <div className="toast">{state.toast}</div>}
     </div>
   )

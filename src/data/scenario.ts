@@ -1,4 +1,4 @@
-import type { AuditEvent, Email, Query } from "./types"
+import type { AuditEvent, Email, GoodsReceipt, Query, Tolerance } from "./types"
 
 // The prototype's "now". Everything relative (due dates, ages) reads from here.
 export const TODAY = "8 Oct 2026"
@@ -19,6 +19,10 @@ export const invoiceMeta: Record<
   "cmc-88213": { ticket: "TCK-4469", due: "Tomorrow", received: "8 Oct, 8:47 AM", emailId: "e-cascade", source: "Manual upload" },
   "sol-100731": { ticket: "TCK-4302", due: "Paid", received: "12 Aug, 9:05 AM", emailId: "", source: "Email intake" },
   "sol-100892": { ticket: "TCK-4388", due: "Paid", received: "15 Sep, 2:31 PM", emailId: "", source: "Email intake" },
+  "ns-4001": { ticket: "TCK-4481", due: "In 5 days", received: "8 Oct, 10:40 AM", emailId: "", source: "Manual upload" },
+  "ns-4002": { ticket: "TCK-4482", due: "In 5 days", received: "8 Oct, 10:40 AM", emailId: "", source: "Manual upload" },
+  "ns-4003": { ticket: "TCK-4483", due: "In 6 days", received: "8 Oct, 10:40 AM", emailId: "", source: "Manual upload" },
+  "ns-4004": { ticket: "TCK-4484", due: "In 6 days", received: "8 Oct, 10:40 AM", emailId: "", source: "Manual upload" },
   "sol-101044": { ticket: "TCK-4467", due: "In 4 days", received: "7 Oct, 3:02 PM", emailId: "e-solstice-alpha", source: "Email intake" },
 }
 
@@ -215,3 +219,42 @@ export const seedAudit = (
     ...extra,
   ]
 }
+
+// The dev build's bands: a line passes within ±2% or $5, the invoice total within ±1% or $25.
+export const DEFAULT_TOLERANCE: Tolerance = {
+  linePct: 2,
+  lineAbs: 5,
+  totalPct: 1,
+  totalAbs: 25,
+  block: true,
+  threeWay: true,
+}
+
+// Goods receipts from the warehouse. POs without one are treated as services (2-way match).
+export const goodsReceipts: GoodsReceipt[] = [
+  { po: "PO-30011", id: "GR-20931", date: "2026-09-03" },
+  { po: "PO-30020", id: "GR-21004", date: "2026-09-05" },
+  { po: "40141", id: "GR-21017", date: "2026-09-08" },
+  { po: "PO-55104", id: "GR-21140", date: "2026-09-30", received: { "Inventory barcode scanner": 10, "Height-adjustable desk converter": 5 } },
+  { po: "PO-55321", id: "GR-18877", date: "2026-06-10", received: { "Hex bolts M8 (box of 100)": 12 }, services: ["Freight surcharge"] },
+  { po: "PO-90071", id: "GR-17702", date: "2026-05-16", received: { "Drywall sheet 4x8 5/8in": 32 } },
+  { po: "PO-44100", id: "GR-19650", date: "2026-10-02" },
+]
+
+// A sample the Upload panel can process: one PDF with four invoices of mixed length.
+export const uploadSamples = [
+  {
+    file: "CU-004_all_invoices_mixed_lengths.pdf",
+    pages: 7,
+    size: "684 KB",
+    invoiceIds: ["ns-4001", "ns-4002", "ns-4003", "ns-4004"],
+    skipped: 0,
+  },
+  {
+    file: "CU-001_all_non_invoices.pdf",
+    pages: 3,
+    size: "212 KB",
+    invoiceIds: [],
+    skipped: 3,
+  },
+]
