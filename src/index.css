@@ -2821,9 +2821,20 @@ input:focus-visible {
   justify-content: space-between;
 }
 
+.evidence-title > span {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
 .evidence-title strong {
   font-family: "Inter:Semi Bold";
   font-size: 12px;
+}
+
+.evidence-title small {
+  color: var(--muted);
+  font-size: 8px;
 }
 
 .evidence-title button,
@@ -2969,6 +2980,11 @@ input:focus-visible {
 .source-variance {
   border: 1px solid var(--accent) !important;
   background: var(--accent-soft);
+}
+
+.source-document-po .source-variance {
+  border-color: #dbb860 !important;
+  background: #fffaf0;
 }
 
 .source-total {
@@ -3661,6 +3677,57 @@ input:focus-visible {
   flex: 0 0 auto;
   max-height: 390px;
   overflow: auto;
+}
+
+.source-documents-compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.source-documents-compare > div {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.source-document-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--muted);
+  font-family: "Inter:Medium";
+  font-size: 9px;
+}
+
+.source-document-label strong {
+  color: var(--ink);
+  font-size: 10px;
+}
+
+.evidence-panel.expanded .document-preview.comparing {
+  padding: 14px;
+}
+
+.evidence-panel.expanded .source-documents-compare .source-invoice {
+  min-height: 430px;
+}
+
+.resolution-rail .evidence-panel.expanded {
+  position: fixed;
+  z-index: 110;
+  top: 116px;
+  right: 24px;
+  bottom: 24px;
+  width: min(820px, calc(100vw - 120px));
+  max-height: none;
+  overflow: auto;
+  box-shadow: 0 20px 70px rgb(20 24 30 / 24%);
+}
+
+.evidence-panel:not(.expanded) .source-documents-compare {
+  grid-template-columns: 1fr;
 }
 
 @media (max-width: 1050px) {

@@ -275,113 +275,154 @@ function QueueView({
   )
 }
 
+function SourceDocument({
+  type,
+  zoom,
+}: {
+  type: "invoice" | "po"
+  zoom: number
+}) {
+  const isInvoice = type === "invoice"
+  return (
+    <div className={`source-invoice source-document-${type} zoom-${zoom}`}>
+      <small>{isInvoice ? "INVOICE" : "PURCHASE ORDER"}</small>
+      <h3>{isInvoice ? "Nortek Air Solutions" : "Meriton Procurement"}</h3>
+      <p>{isInvoice ? "NTK-77413" : "PO 4482210"}</p>
+      <div className="source-fields">
+        <span>
+          <small>{isInvoice ? "Bill to" : "Supplier"}</small>
+          {isInvoice ? "Meriton Finance" : "Nortek Air Solutions"}
+        </span>
+        <span>
+          <small>Ship to</small>
+          100 Smith Street, Collingwood VIC 3066 AU
+        </span>
+        <div>
+          <span>
+            <small>{isInvoice ? "Terms" : "Order date"}</small>
+            {isInvoice ? "Net 30 days" : "01 Oct 2026"}
+          </span>
+          <span>
+            <small>{isInvoice ? "PO reference" : "Status"}</small>
+            {isInvoice ? "4482201" : "Approved"}
+          </span>
+        </div>
+      </div>
+      <div className="source-lines">
+        <span className="source-line-head">
+          <small>Description</small>
+          <small>Amount</small>
+        </span>
+        <span>
+          Rooftop unit RTU-40 <b>$7,700.00</b>
+        </span>
+        <span>
+          Curb adapter kit <b>$940.50</b>
+        </span>
+        <span className="source-variance">
+          Freight surcharge <b>{isInvoice ? "$540.00" : "$270.00"}</b>
+        </span>
+      </div>
+      <strong className="source-total">
+        {isInvoice ? "Total due" : "PO total"}
+        <span>{isInvoice ? "$9,180.50" : "$8,910.50"}</span>
+      </strong>
+    </div>
+  )
+}
+
 function EvidencePanel() {
-  const [tab, setTab] = useState("Original invoice")
+  const [tab, setTab] = useState<"Invoice" | "Purchase order" | "Compare">("Invoice")
   const [zoom, setZoom] = useState(100)
   const [expanded, setExpanded] = useState(false)
 
   return (
     <aside className={`evidence-panel ${expanded ? "expanded" : ""}`}>
       <div className="evidence-title">
-        <strong>Evidence</strong>
-        <button aria-label="Toggle full evidence view" onClick={() => setExpanded(!expanded)}>
+        <span>
+          <strong>Source documents</strong>
+          <small>Original records</small>
+        </span>
+        <button
+          aria-label="Toggle full evidence view"
+          onClick={() => setExpanded(!expanded)}
+        >
           <FIcon name="43f13.svg" size={16} />
         </button>
       </div>
       <div className="evidence-tabs" role="tablist">
-        {["Original invoice", "Source email", "Activity"].map((label) => (
+        {(["Invoice", "Purchase order", "Compare"] as const).map((label) => (
           <button
             className={tab === label ? "active" : ""}
             key={label}
-            onClick={() => setTab(label)}
+            onClick={() => {
+              setTab(label)
+              if (label === "Compare") setExpanded(true)
+            }}
             role="tab"
           >
             {label}
           </button>
         ))}
       </div>
-      {tab === "Original invoice" ? (
-        <>
-          <div className="document-preview">
-            <div className="document-controls">
-              <span>Page 1 of 2</span>
-              <span>
-                <button onClick={() => setZoom(Math.max(80, zoom - 10))}>
-                  <FIcon name="b7f84.svg" size={12} />
-                </button>
-                {zoom}%
-                <button onClick={() => setZoom(Math.min(120, zoom + 10))}>
-                  <FIcon name="4dcfa.svg" size={12} />
-                </button>
-              </span>
-            </div>
-            <div className={`source-invoice zoom-${zoom}`}>
-              <small>INVOICE</small>
-              <h3>Nortek Air Solutions</h3>
-              <p>NTK-77413</p>
-              <div className="source-fields">
-                <span>
-                  <small>Bill to</small>
-                  Meriton Finance
-                </span>
-                <span>
-                  <small>Ship to</small>
-                  100 Smith Street, Collingwood VIC 3066 AU
-                </span>
-                <div>
-                  <span>
-                    <small>Terms</small>
-                    Net 30 days
-                  </span>
-                  <span>
-                    <small>PO reference</small>
-                    4482201
-                  </span>
-                </div>
-              </div>
-              <div className="source-lines">
-                <span className="source-line-head">
-                  <small>Description</small>
-                  <small>Amount</small>
-                </span>
-                <span>
-                  Rooftop unit RTU-40 <b>$7,700.00</b>
-                </span>
-                <span>
-                  Curb adapter kit <b>$940.50</b>
-                </span>
-                <span className="source-variance">
-                  Freight surcharge <b>$540.00</b>
-                </span>
-              </div>
-              <strong className="source-total">
-                Total due <span>$9,180.50</span>
-              </strong>
-            </div>
-            <small>Illustrative preview · Values from the review scenario.</small>
-          </div>
-          <div className="evidence-action">
-            <span>Freight charge highlighted</span>
-            <button className="fin-secondary">Open full view</button>
-          </div>
-          <div className="evidence-note">
-            <strong>Reference requires confirmation</strong>
-            <p>
-              The document shows 4482201. The linked PO is 4482210. A line match
-              does not confirm the PO reference.
-            </p>
-          </div>
-        </>
-      ) : (
-        <div className="evidence-placeholder">
-          <strong>{tab}</strong>
-          <p>
-            {tab === "Source email"
-              ? "Invoice NTK-77413 was received from billing@nortek.example with two attachments."
-              : "Received via email intake · Assigned to Alex Rivera · No Sales clarification sent yet."}
-          </p>
+      <div className={`document-preview ${tab === "Compare" ? "comparing" : ""}`}>
+        <div className="document-controls">
+          <span>{tab === "Compare" ? "Aligned source view" : "Page 1 of 2"}</span>
+          <span>
+            <button onClick={() => setZoom(Math.max(80, zoom - 10))}>
+              <FIcon name="b7f84.svg" size={12} />
+            </button>
+            {zoom}%
+            <button onClick={() => setZoom(Math.min(120, zoom + 10))}>
+              <FIcon name="4dcfa.svg" size={12} />
+            </button>
+          </span>
         </div>
-      )}
+        {tab === "Compare" ? (
+          <div className="source-documents-compare">
+            <div>
+              <span className="source-document-label">
+                Original invoice <strong>$9,180.50</strong>
+              </span>
+              <SourceDocument type="invoice" zoom={zoom} />
+            </div>
+            <div>
+              <span className="source-document-label">
+                Original PO <strong>$8,910.50</strong>
+              </span>
+              <SourceDocument type="po" zoom={zoom} />
+            </div>
+          </div>
+        ) : (
+          <SourceDocument type={tab === "Invoice" ? "invoice" : "po"} zoom={zoom} />
+        )}
+        <small>Original source values · Freight variance highlighted.</small>
+      </div>
+      <div className="evidence-action">
+        <span>
+          {tab === "Invoice"
+            ? "Invoice PO reference: 4482201"
+            : tab === "Purchase order"
+              ? "Approved PO: 4482210"
+              : "$270 freight difference"}
+        </span>
+        <button
+          className="fin-secondary"
+          onClick={() => {
+            setTab("Compare")
+            setExpanded(true)
+          }}
+        >
+          Compare originals
+        </button>
+      </div>
+      <div className="evidence-note">
+        <strong>Source discrepancy</strong>
+        <p>
+          The invoice contains $540 freight and references 4482201. The approved
+          PO allows $270 freight under PO 4482210.
+        </p>
+      </div>
     </aside>
   )
 }
