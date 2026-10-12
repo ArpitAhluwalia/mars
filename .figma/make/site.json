@@ -1,1 +1,10 @@
-{}
+{
+  "description": "Visualize and interact with AP reconciliation workflows in a Microsoft Teams app prototype designed for Meriton to streamline invoice processing.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
