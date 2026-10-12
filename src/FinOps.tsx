@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 
 const asset = (name: string) => `/assets/${name}`
 
@@ -509,6 +509,16 @@ function ReviewView({
   const [freightResolved, setFreightResolved] = useState(false)
 
   const canApprove = referenceConfirmed && freightResolved
+
+  useEffect(() => {
+    if (!poResults) return
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setPoResults(false)
+    }
+    window.addEventListener("keydown", closeOnEscape)
+    return () => window.removeEventListener("keydown", closeOnEscape)
+  }, [poResults])
+
   const lineItems = [
     {
       name: "Rooftop unit RTU-40",
@@ -637,37 +647,59 @@ function ReviewView({
               </button>
             </section>
             {poResults && (
-              <div className="po-finder">
-                <label className="fin-search">
-                  <FIcon name="79676.svg" size={20} />
-                  <input
-                    aria-label="Search purchase orders"
-                    onChange={(event) => setPoQuery(event.target.value)}
-                    placeholder="Search PO number or vendor"
-                    value={poQuery}
-                  />
-                </label>
-                <div className="po-results">
-                  {["4482210", "4482201", "4481942"]
-                    .filter((po) => !poQuery || po.includes(poQuery))
-                    .map((po, index) => (
-                      <button
-                        key={po}
-                        onClick={() => {
-                          setLinkedPo(po)
-                          setPoResults(false)
-                          notify(`PO ${po} linked`)
-                        }}
-                      >
-                        <span>
-                          <strong>PO {po}</strong>
-                          <small>Nortek Air Solutions · {index === 0 ? "98%" : "74%"} match</small>
-                        </span>
-                        <span>{po === linkedPo ? "Linked" : "Select"}</span>
-                      </button>
-                    ))}
+              <>
+                <button
+                  aria-label="Close purchase order selector"
+                  className="po-finder-dismiss"
+                  onClick={() => setPoResults(false)}
+                />
+                <div aria-label="Select a purchase order" className="po-finder" role="dialog">
+                  <div className="po-finder-header">
+                    <span>
+                      <strong>Select purchase order</strong>
+                      <small>3 suggested matches</small>
+                    </span>
+                    <button
+                      aria-label="Close purchase order selector"
+                      onClick={() => setPoResults(false)}
+                    >
+                      ×
+                    </button>
+                  </div>
+                  <label className="fin-search">
+                    <FIcon name="79676.svg" size={20} />
+                    <input
+                      aria-label="Search purchase orders"
+                      autoFocus
+                      onChange={(event) => setPoQuery(event.target.value)}
+                      placeholder="Search PO number or vendor"
+                      value={poQuery}
+                    />
+                  </label>
+                  <div className="po-results">
+                    {["4482210", "4482201", "4481942"]
+                      .filter((po) => !poQuery || po.includes(poQuery))
+                      .map((po, index) => (
+                        <button
+                          key={po}
+                          onClick={() => {
+                            setLinkedPo(po)
+                            setPoResults(false)
+                            notify(`PO ${po} linked`)
+                          }}
+                        >
+                          <span>
+                            <strong>PO {po}</strong>
+                            <small>
+                              Nortek Air Solutions · {index === 0 ? "98%" : "74%"} match
+                            </small>
+                          </span>
+                          <span>{po === linkedPo ? "Linked" : "Select"}</span>
+                        </button>
+                      ))}
+                  </div>
                 </div>
-              </div>
+              </>
             )}
             <section className="visual-compare">
               <div className="visual-compare-head">

@@ -3769,3 +3769,329 @@ input:focus-visible {
     max-height: none;
   }
 }
+
+/* Product polish and interaction consistency */
+.app-shell {
+  background: #f3f5f7;
+}
+
+.toolbar {
+  background: linear-gradient(180deg, #fff 0%, #fbfcfc 100%);
+  box-shadow:
+    0 1px 0 rgb(30 41 51 / 4%),
+    0 5px 16px rgb(30 41 51 / 3%);
+}
+
+.secondary-button,
+.primary-button,
+.fin-secondary,
+.fin-primary,
+.icon-button {
+  letter-spacing: -0.01em;
+}
+
+.secondary-button:active,
+.primary-button:active,
+.fin-secondary:active:not(:disabled),
+.fin-primary:active:not(:disabled),
+.icon-button:active {
+  transform: translateY(1px);
+  box-shadow: none;
+}
+
+.fin-secondary {
+  border-color: #dce1e5;
+  background: linear-gradient(180deg, #fff 0%, #fbfcfc 100%);
+  box-shadow:
+    0 1px 2px rgb(30 41 51 / 5%),
+    0 1px 0 rgb(255 255 255 / 80%) inset;
+}
+
+.fin-secondary:hover:not(:disabled) {
+  border-color: #bfc7cd;
+  background: white;
+  box-shadow:
+    0 3px 9px rgb(30 41 51 / 8%),
+    0 1px 0 rgb(255 255 255 / 90%) inset;
+  transform: translateY(-1px);
+}
+
+.fin-primary {
+  background: linear-gradient(180deg, #fb6229 0%, #ec4a12 100%);
+  box-shadow:
+    0 4px 10px rgb(242 83 27 / 20%),
+    0 1px 0 rgb(255 255 255 / 18%) inset;
+}
+
+.fin-primary:hover:not(:disabled) {
+  background: linear-gradient(180deg, #f75b22 0%, #d9410c 100%);
+  box-shadow:
+    0 6px 14px rgb(242 83 27 / 25%),
+    0 1px 0 rgb(255 255 255 / 18%) inset;
+  transform: translateY(-1px);
+}
+
+.product-nav-item {
+  transition:
+    background-color 150ms ease,
+    color 150ms ease,
+    transform 150ms ease;
+}
+
+.product-nav-item:hover {
+  background: rgb(255 255 255 / 4%);
+  color: white;
+}
+
+.product-nav-item.active {
+  background:
+    linear-gradient(90deg, rgb(242 83 27 / 24%), rgb(242 83 27 / 8%)),
+    rgb(255 255 255 / 2%);
+  box-shadow:
+    inset 0 1px rgb(255 255 255 / 4%),
+    0 7px 18px rgb(0 0 0 / 10%);
+}
+
+.queue-page,
+.review-page {
+  background: #f4f6f8;
+}
+
+.queue-toolbar,
+.review-toolbar {
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 98%), rgb(250 251 252 / 98%));
+  box-shadow: 0 5px 18px rgb(30 41 51 / 4%);
+}
+
+.queue-content {
+  background:
+    radial-gradient(circle at 86% 0%, rgb(242 83 27 / 3%), transparent 28%),
+    #f5f7f8;
+}
+
+.queue-tabs {
+  padding: 0 4px;
+  border: 1px solid var(--line);
+  border-radius: 9px 9px 0 0;
+  background: rgb(255 255 255 / 78%);
+  box-shadow: 0 1px 3px rgb(30 41 51 / 3%);
+}
+
+.queue-tabs > div {
+  padding-left: 10px;
+}
+
+.queue-tabs > small {
+  padding-right: 10px;
+}
+
+.queue-table {
+  border-radius: 0 0 10px 10px;
+  background: white;
+  box-shadow:
+    0 10px 28px rgb(30 41 51 / 6%),
+    0 1px 2px rgb(30 41 51 / 4%);
+}
+
+.queue-table-head {
+  background: #f8fafb;
+  box-shadow: inset 0 -1px var(--line);
+}
+
+.queue-row {
+  transition:
+    background-color 120ms ease,
+    box-shadow 120ms ease;
+}
+
+.queue-row:hover {
+  position: relative;
+  z-index: 1;
+  background: #fffaf8;
+  box-shadow:
+    inset 3px 0 var(--accent),
+    0 3px 10px rgb(30 41 51 / 5%);
+}
+
+.status-badge {
+  border: 1px solid transparent;
+  box-shadow: 0 1px 1px rgb(30 41 51 / 3%);
+}
+
+.status-badge.warning {
+  border-color: #ffe1d4;
+}
+
+.status-badge.success {
+  border-color: #d9eadf;
+}
+
+.record-summary {
+  position: relative;
+  z-index: 2;
+  background: white;
+  box-shadow: 0 5px 16px rgb(30 41 51 / 3%);
+}
+
+.financial-summary > span {
+  min-width: 92px;
+  padding: 8px 10px;
+  border: 1px solid #edf0f2;
+  border-radius: 8px;
+  background: #fafbfc;
+}
+
+.review-scroll {
+  background:
+    radial-gradient(circle at 90% 0%, rgb(242 83 27 / 4%), transparent 25%),
+    #f1f4f6;
+}
+
+.match-console {
+  border-color: #dce1e5;
+  box-shadow:
+    0 14px 34px rgb(30 41 51 / 8%),
+    0 2px 5px rgb(30 41 51 / 4%);
+}
+
+.match-console-header {
+  background: linear-gradient(180deg, #fff 0%, #fbfcfc 100%);
+}
+
+.linked-po-bar {
+  background:
+    linear-gradient(90deg, #fff9f6 0%, #fbfcfc 38%, #f8fafb 100%);
+}
+
+.linked-po-ai {
+  border: 1px solid #ffe0d3;
+  box-shadow: 0 3px 8px rgb(242 83 27 / 8%);
+}
+
+.visual-compare-head {
+  background: #f4f6f8;
+  box-shadow: 0 2px 5px rgb(30 41 51 / 4%);
+}
+
+.visual-compare-row.attention {
+  background: linear-gradient(90deg, #fff6f1 0%, #fffaf8 32%, white 75%);
+}
+
+.resolution-summary,
+.resolution-card,
+.evidence-panel {
+  box-shadow:
+    0 8px 22px rgb(30 41 51 / 6%),
+    0 1px 2px rgb(30 41 51 / 4%);
+}
+
+.resolution-card {
+  transition:
+    transform 140ms ease,
+    box-shadow 140ms ease;
+}
+
+.resolution-card:not(.resolved):hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 11px 26px rgb(30 41 51 / 8%),
+    0 1px 2px rgb(30 41 51 / 4%);
+}
+
+.resolution-card > button:hover {
+  background: var(--accent-hover);
+}
+
+.document-preview {
+  border: 1px solid #e4e8eb;
+  box-shadow: inset 0 1px 3px rgb(30 41 51 / 4%);
+}
+
+.source-invoice {
+  box-shadow: 0 7px 18px rgb(30 41 51 / 7%);
+}
+
+.po-finder-dismiss {
+  position: absolute;
+  z-index: 24;
+  inset: 0;
+  border: 0;
+  background: rgb(30 41 51 / 4%);
+  cursor: default;
+}
+
+.po-finder {
+  z-index: 25;
+  padding: 10px;
+  border-color: #d8dde1;
+  box-shadow:
+    0 22px 60px rgb(30 41 51 / 20%),
+    0 2px 8px rgb(30 41 51 / 8%);
+  animation: po-finder-in 140ms ease-out;
+}
+
+.po-finder-header {
+  min-height: 42px;
+  padding: 0 2px 9px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.po-finder-header > span {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.po-finder-header strong {
+  font-family: "Inter:Semi Bold";
+  font-size: 12px;
+}
+
+.po-finder-header small {
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.po-finder-header > button {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  display: grid;
+  place-items: center;
+  background: white;
+  color: var(--muted);
+  font-size: 20px;
+  line-height: 1;
+}
+
+.po-finder-header > button:hover {
+  border-color: #c6cdd2;
+  background: #f3f5f7;
+  color: var(--ink);
+}
+
+.po-finder .po-results button {
+  min-height: 54px;
+  border: 1px solid transparent;
+}
+
+.po-finder .po-results button:hover {
+  border-color: #ffe0d3;
+  background: #fff7f3;
+}
+
+.po-finder .po-results button:first-child {
+  background: #fff8f4;
+}
+
+@keyframes po-finder-in {
+  from {
+    opacity: 0;
+    transform: translateY(-5px) scale(0.99);
+  }
+}
