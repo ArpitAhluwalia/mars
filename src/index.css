@@ -2827,6 +2827,12 @@ input:focus-visible {
   gap: 3px;
 }
 
+.evidence-title .evidence-title-actions {
+  flex-direction: row;
+  align-items: center;
+  gap: 7px;
+}
+
 .evidence-title strong {
   font-family: "Inter:Semi Bold";
   font-size: 12px;
@@ -3724,6 +3730,35 @@ input:focus-visible {
   max-height: none;
   overflow: auto;
   box-shadow: 0 20px 70px rgb(20 24 30 / 24%);
+}
+
+.evidence-dismiss {
+  position: fixed;
+  z-index: 109;
+  inset: 0;
+  border: 0;
+  background: rgb(24 28 34 / 24%);
+  cursor: default;
+  backdrop-filter: blur(1px);
+}
+
+.evidence-title .evidence-close {
+  width: 32px;
+  height: 32px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  display: grid;
+  place-items: center;
+  background: white;
+  color: var(--muted);
+  font-size: 21px;
+  line-height: 1;
+}
+
+.evidence-title .evidence-close:hover {
+  border-color: #c6cdd2;
+  background: #f3f5f7;
+  color: var(--ink);
 }
 
 .evidence-panel:not(.expanded) .source-documents-compare {

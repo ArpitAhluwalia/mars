@@ -336,94 +336,125 @@ function EvidencePanel() {
   const [zoom, setZoom] = useState(100)
   const [expanded, setExpanded] = useState(false)
 
+  useEffect(() => {
+    if (!expanded) return
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setExpanded(false)
+    }
+    window.addEventListener("keydown", closeOnEscape)
+    return () => window.removeEventListener("keydown", closeOnEscape)
+  }, [expanded])
+
   return (
-    <aside className={`evidence-panel ${expanded ? "expanded" : ""}`}>
-      <div className="evidence-title">
-        <span>
-          <strong>Source documents</strong>
-          <small>Original records</small>
-        </span>
+    <>
+      {expanded && (
         <button
-          aria-label="Toggle full evidence view"
-          onClick={() => setExpanded(!expanded)}
-        >
-          <FIcon name="43f13.svg" size={16} />
-        </button>
-      </div>
-      <div className="evidence-tabs" role="tablist">
-        {(["Invoice", "Purchase order", "Compare"] as const).map((label) => (
-          <button
-            className={tab === label ? "active" : ""}
-            key={label}
-            onClick={() => {
-              setTab(label)
-              if (label === "Compare") setExpanded(true)
-            }}
-            role="tab"
-          >
-            {label}
-          </button>
-        ))}
-      </div>
-      <div className={`document-preview ${tab === "Compare" ? "comparing" : ""}`}>
-        <div className="document-controls">
-          <span>{tab === "Compare" ? "Aligned source view" : "Page 1 of 2"}</span>
+          aria-label="Close source document viewer"
+          className="evidence-dismiss"
+          onClick={() => setExpanded(false)}
+        />
+      )}
+      <aside className={`evidence-panel ${expanded ? "expanded" : ""}`}>
+        <div className="evidence-title">
           <span>
-            <button onClick={() => setZoom(Math.max(80, zoom - 10))}>
-              <FIcon name="b7f84.svg" size={12} />
-            </button>
-            {zoom}%
-            <button onClick={() => setZoom(Math.min(120, zoom + 10))}>
-              <FIcon name="4dcfa.svg" size={12} />
-            </button>
+            <strong>Source documents</strong>
+            <small>Original records</small>
+          </span>
+          <span className="evidence-title-actions">
+            {!expanded && (
+              <button
+                aria-label="Open full evidence view"
+                onClick={() => setExpanded(true)}
+              >
+                <FIcon name="43f13.svg" size={16} />
+              </button>
+            )}
+            {expanded && (
+              <button
+                aria-label="Close source document viewer"
+                className="evidence-close"
+                onClick={() => setExpanded(false)}
+              >
+                ×
+              </button>
+            )}
           </span>
         </div>
-        {tab === "Compare" ? (
-          <div className="source-documents-compare">
-            <div>
-              <span className="source-document-label">
-                Original invoice <strong>$9,180.50</strong>
-              </span>
-              <SourceDocument type="invoice" zoom={zoom} />
-            </div>
-            <div>
-              <span className="source-document-label">
-                Original PO <strong>$8,910.50</strong>
-              </span>
-              <SourceDocument type="po" zoom={zoom} />
-            </div>
+        <div className="evidence-tabs" role="tablist">
+          {(["Invoice", "Purchase order", "Compare"] as const).map((label) => (
+            <button
+              className={tab === label ? "active" : ""}
+              key={label}
+              onClick={() => {
+                setTab(label)
+                if (label === "Compare") setExpanded(true)
+              }}
+              role="tab"
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+        <div className={`document-preview ${tab === "Compare" ? "comparing" : ""}`}>
+          <div className="document-controls">
+            <span>{tab === "Compare" ? "Aligned source view" : "Page 1 of 2"}</span>
+            <span>
+              <button onClick={() => setZoom(Math.max(80, zoom - 10))}>
+                <FIcon name="b7f84.svg" size={12} />
+              </button>
+              {zoom}%
+              <button onClick={() => setZoom(Math.min(120, zoom + 10))}>
+                <FIcon name="4dcfa.svg" size={12} />
+              </button>
+            </span>
           </div>
-        ) : (
-          <SourceDocument type={tab === "Invoice" ? "invoice" : "po"} zoom={zoom} />
-        )}
-        <small>Original source values · Freight variance highlighted.</small>
-      </div>
-      <div className="evidence-action">
-        <span>
-          {tab === "Invoice"
-            ? "Invoice PO reference: 4482201"
-            : tab === "Purchase order"
-              ? "Approved PO: 4482210"
-              : "$270 freight difference"}
-        </span>
-        <button
-          className="fin-secondary"
-          onClick={() => {
-            setTab("Compare")
-            setExpanded(true)
-          }}
-        >
-          Compare originals
-        </button>
-      </div>
-      <div className="evidence-note">
-        <strong>Source discrepancy</strong>
-        <p>
-          The invoice contains $540 freight and references 4482201. The approved
-          PO allows $270 freight under PO 4482210.
-        </p>
-      </div>
-    </aside>
+          {tab === "Compare" ? (
+            <div className="source-documents-compare">
+              <div>
+                <span className="source-document-label">
+                  Original invoice <strong>$9,180.50</strong>
+                </span>
+                <SourceDocument type="invoice" zoom={zoom} />
+              </div>
+              <div>
+                <span className="source-document-label">
+                  Original PO <strong>$8,910.50</strong>
+                </span>
+                <SourceDocument type="po" zoom={zoom} />
+              </div>
+            </div>
+          ) : (
+            <SourceDocument type={tab === "Invoice" ? "invoice" : "po"} zoom={zoom} />
+          )}
+          <small>Original source values · Freight variance highlighted.</small>
+        </div>
+        <div className="evidence-action">
+          <span>
+            {tab === "Invoice"
+              ? "Invoice PO reference: 4482201"
+              : tab === "Purchase order"
+                ? "Approved PO: 4482210"
+                : "$270 freight difference"}
+          </span>
+          <button
+            className="fin-secondary"
+            onClick={() => {
+              setTab("Compare")
+              setExpanded(true)
+            }}
+          >
+            Compare originals
+          </button>
+        </div>
+        <div className="evidence-note">
+          <strong>Source discrepancy</strong>
+          <p>
+            The invoice contains $540 freight and references 4482201. The approved
+            PO allows $270 freight under PO 4482210.
+          </p>
+        </div>
+      </aside>
+    </>
   )
 }
 
