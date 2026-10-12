@@ -90,11 +90,6 @@ function Sidebar() {
           </button>
         ))}
       </nav>
-      <div className="sidebar-foot">
-        <span className="side-user" title={`${OWNER.name} · FinOps`}>
-          <Avatar name={OWNER.name} size={28} />
-        </span>
-      </div>
     </aside>
   )
 }
