@@ -839,18 +839,6 @@ function ReviewView({
             </section>
           </main>
           <aside className="resolution-rail">
-            <section className="resolution-summary">
-              <span className={canApprove ? "ready-ring complete" : "ready-ring"}>
-                {canApprove ? "100%" : `${50 + Number(referenceConfirmed) * 25 + Number(freightResolved) * 25}%`}
-              </span>
-              <span>
-                <strong>{canApprove ? "Ready to approve" : "Action required"}</strong>
-                <small>
-                  {canApprove ? "All checks completed" : `${2 - Number(referenceConfirmed) - Number(freightResolved)} issues remaining`}
-                </small>
-              </span>
-              {!canApprove && <FIcon name="e0d08.svg" size={20} />}
-            </section>
             <EvidencePanel />
           </aside>
         </div>
