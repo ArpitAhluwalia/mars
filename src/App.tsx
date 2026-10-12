@@ -83,6 +83,98 @@ function Icon({
   return <img alt={alt} height={size} src={asset(name)} width={size} />
 }
 
+function PlanetMark({ compact = false }: { compact?: boolean }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={`planet-mark ${compact ? "planet-mark-compact" : ""}`}
+    >
+      <i />
+    </span>
+  )
+}
+
+function TeamsRail() {
+  return (
+    <aside aria-label="Microsoft Teams navigation" className="teams-rail">
+      <button aria-label="Activity" className="teams-rail-item">
+        <span className="rail-glyph rail-activity" />
+        <small>Activity</small>
+      </button>
+      <button aria-label="Chat" className="teams-rail-item">
+        <span className="rail-glyph rail-chat" />
+        <small>Chat</small>
+      </button>
+      <button aria-label="Teams" className="teams-rail-item">
+        <span className="rail-glyph rail-people" />
+        <small>Teams</small>
+      </button>
+      <button aria-label="Calendar" className="teams-rail-item">
+        <span className="rail-glyph rail-calendar" />
+        <small>Calendar</small>
+      </button>
+      <button aria-label="MARS" className="teams-rail-item active">
+        <PlanetMark compact />
+        <small>MARS</small>
+      </button>
+      <span className="teams-rail-spacer" />
+      <button aria-label="Apps" className="teams-rail-item">
+        <span className="rail-glyph rail-apps" />
+        <small>Apps</small>
+      </button>
+    </aside>
+  )
+}
+
+function ProductNav() {
+  return (
+    <aside aria-label="MARS navigation" className="product-nav">
+      <div className="product-brand">
+        <PlanetMark />
+        <span>
+          <strong>MARS</strong>
+          <small>Meriton Agentic Reconciliation System</small>
+        </span>
+      </div>
+      <button className="organization-switcher">
+        <span className="organization-mark">M</span>
+        <span>Meriton</span>
+        <span className="nav-chevron">⌄</span>
+      </button>
+      <nav aria-label="Workspace">
+        <small className="nav-label">WORKSPACE</small>
+        <button aria-current="page" className="product-nav-item active">
+          <span className="nav-icon">
+            <Icon name="9fca5.svg" size={18} />
+          </span>
+          <span>
+            <strong>Inbox</strong>
+            <small>Email intake</small>
+          </span>
+          <i>6</i>
+        </button>
+      </nav>
+      <div className="product-nav-footer">
+        <button className="product-nav-item utility">
+          <span className="settings-glyph" />
+          <span>
+            <strong>Settings</strong>
+            <small>Workspace preferences</small>
+          </span>
+        </button>
+        <button className="account-switcher">
+          <span className="account-avatar">AP</span>
+          <span>
+            <strong>Accounts Payable</strong>
+            <small>Meriton</small>
+          </span>
+          <span className="nav-chevron">⌄</span>
+        </button>
+      </div>
+    </aside>
+  )
+}
+
 function PdfBadge() {
   return (
     <span className="pdf-badge">
@@ -583,47 +675,88 @@ export default function App() {
   }
 
   return (
-    <div className="app-shell">
-      <header className="toolbar">
-        <div className="mailbox-identity">
-          <span className="app-mark">M</span>
-          <span className="page-title">
-            <small>MARS · AP RECONCILIATION</small>
-            <strong>Inbox</strong>
-          </span>
-          <span className="vertical-divider" />
-          <span className="connection-details">
-            <span>
-              Mailbox connected
-              <Icon name="d2eff.svg" size={8} />
-            </span>
-            <small>invoices@meriton.com</small>
-          </span>
+    <div className="teams-shell">
+      <header className="teams-topbar">
+        <div aria-hidden="true" className="window-controls">
+          <i />
+          <i />
+          <i />
         </div>
-        <div className="sync-block">
-          <button className="secondary-button" onClick={sync}>
-            <span className={syncing ? "spin" : ""}>
-              <Icon name="1538a.svg" size={20} />
-            </span>
-            {syncing ? "Syncing…" : "Sync mailbox"}
-          </button>
-          <small>Last sync: 8 Oct 2026, 10:24 AM</small>
+        <div aria-hidden="true" className="teams-history">
+          <span>‹</span>
+          <span>›</span>
+        </div>
+        <label className="teams-search">
+          <Icon name="e324f.svg" size={16} />
+          <input aria-label="Search Microsoft Teams" placeholder="Search" />
+          <kbd>Ctrl E</kbd>
+        </label>
+        <div className="teams-profile">
+          <button aria-label="More Teams options">•••</button>
+          <span>AP</span>
         </div>
       </header>
-      <div className="workspace">
-        <Mailbox
-          mail={initialMail}
-          selected={selected}
-          setSelected={setSelected}
-        />
-        <Detail
-          notify={notify}
-          openPreview={() => setPreviewOpen(true)}
-          selectedMail={selectedMail}
-        />
-      </div>
-      {previewOpen && <AttachmentDrawer close={() => setPreviewOpen(false)} />}
-      {toast && <div className="toast">{toast}</div>}
+      <TeamsRail />
+      <section className="teams-stage">
+        <header className="teams-appbar">
+          <span className="teams-app-identity">
+            <PlanetMark compact />
+            <strong>MARS</strong>
+          </span>
+          <nav aria-label="MARS tabs">
+            <button className="active">MARS</button>
+          </nav>
+          <button aria-label="More MARS options" className="teams-app-more">
+            •••
+          </button>
+        </header>
+        <div className="mars-layout">
+          <ProductNav />
+          <div className="app-shell">
+            <header className="toolbar">
+              <div className="mailbox-identity">
+                <span className="page-title">
+                  <small>EMAIL INTAKE</small>
+                  <strong>Inbox</strong>
+                </span>
+                <span className="vertical-divider" />
+                <span className="connection-details">
+                  <span>
+                    Mailbox connected
+                    <Icon name="d2eff.svg" size={8} />
+                  </span>
+                  <small>invoices@meriton.com</small>
+                </span>
+              </div>
+              <div className="sync-block">
+                <button className="secondary-button" onClick={sync}>
+                  <span className={syncing ? "spin" : ""}>
+                    <Icon name="1538a.svg" size={20} />
+                  </span>
+                  {syncing ? "Syncing…" : "Sync mailbox"}
+                </button>
+                <small>Last sync: 8 Oct 2026, 10:24 AM</small>
+              </div>
+            </header>
+            <div className="workspace">
+              <Mailbox
+                mail={initialMail}
+                selected={selected}
+                setSelected={setSelected}
+              />
+              <Detail
+                notify={notify}
+                openPreview={() => setPreviewOpen(true)}
+                selectedMail={selectedMail}
+              />
+            </div>
+            {previewOpen && (
+              <AttachmentDrawer close={() => setPreviewOpen(false)} />
+            )}
+            {toast && <div className="toast">{toast}</div>}
+          </div>
+        </div>
+      </section>
     </div>
   )
 }
