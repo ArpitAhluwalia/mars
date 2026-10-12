@@ -64,8 +64,8 @@ button {
 }
 
 .toolbar {
-  height: 89px;
-  padding: 13px 26px 0;
+  height: 72px;
+  padding: 0 clamp(18px, 2vw, 26px);
   border-bottom: 1px solid #e6e9ec;
   background: #fafbfb;
   display: flex;
@@ -81,7 +81,7 @@ button {
 
 .mailbox-identity > strong {
   font-family: "Inter:Semi Bold";
-  font-size: 26px;
+  font-size: 22px;
   font-weight: 600;
 }
 
@@ -151,13 +151,13 @@ button {
 
 .workspace {
   display: flex;
-  height: calc(100dvh - 89px);
-  min-height: 620px;
+  height: calc(100dvh - 72px);
+  min-height: 0;
 }
 
 .mailbox {
-  width: 512px;
-  min-width: 360px;
+  width: clamp(340px, 32vw, 512px);
+  min-width: 340px;
   border-right: 1px solid #e6e9ec;
   display: flex;
   flex-direction: column;
@@ -431,7 +431,7 @@ button {
 .detail {
   min-width: 0;
   flex: 1;
-  padding: 22px 28px 20px;
+  padding: 20px clamp(22px, 2.25vw, 32px);
   overflow-y: auto;
   background: #fff;
 }
@@ -454,7 +454,7 @@ button {
   margin: 0;
   overflow: hidden;
   font-family: "Inter:Semi Bold";
-  font-size: 23px;
+  font-size: 20px;
   font-weight: 600;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -488,14 +488,14 @@ button {
 }
 
 .email-body {
-  height: 216px;
+  min-height: 164px;
   margin-top: 19px;
-  padding-top: 22px;
+  padding: 20px 0 24px;
   border-top: 1px solid #e6e9ec;
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  font-size: 14px;
+  gap: 16px;
+  font-size: 13px;
   line-height: 1.6;
 }
 
@@ -1002,12 +1002,12 @@ button {
   }
 
   .workspace {
-    height: calc(100dvh - 89px);
+    height: calc(100dvh - 72px);
   }
 
   .mailbox {
-    width: 42%;
-    min-width: 290px;
+    width: 38%;
+    min-width: 320px;
   }
 
   .mailbox-controls {
