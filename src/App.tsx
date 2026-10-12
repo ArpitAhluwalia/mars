@@ -155,7 +155,7 @@ function ProductNav({
           <span className="nav-icon">
             <Icon name="790e9.svg" size={28} />
           </span>
-          <small>FinOps Queue</small>
+          <small>Queue</small>
         </button>
       </nav>
       <div className="product-nav-footer">
