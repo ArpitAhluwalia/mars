@@ -769,8 +769,21 @@ function ReviewView({
                 </span>
                 <span className="compare-value">4482201</span>
                 <span className="compare-value">{linkedPo}</span>
-                <span className={referenceConfirmed ? "zero-difference" : "reference-difference"}>
-                  {referenceConfirmed ? "Confirmed" : "Mismatch"}
+                <span
+                  className={
+                    referenceConfirmed
+                      ? "zero-difference"
+                      : "reference-difference compare-action-cell"
+                  }
+                >
+                  {referenceConfirmed ? (
+                    "Confirmed"
+                  ) : (
+                    <>
+                      <small>Mismatch</small>
+                      <button onClick={() => setReferenceConfirmed(true)}>Confirm</button>
+                    </>
+                  )}
                 </span>
               </div>
               {lineItems
@@ -795,8 +808,23 @@ function ReviewView({
                       <strong>{item.po}</strong>
                       <small>{item.poQty}</small>
                     </span>
-                    <span className={item.matched ? "zero-difference" : "reference-difference"}>
-                      {item.matched ? "Matched" : item.difference}
+                    <span
+                      className={
+                        item.matched
+                          ? "zero-difference"
+                          : "reference-difference compare-action-cell"
+                      }
+                    >
+                      {item.matched ? (
+                        "Matched"
+                      ) : (
+                        <>
+                          <small>{item.difference}</small>
+                          <button onClick={() => setSalesOpen(true)}>
+                            {salesSent ? "View reply" : "Ask Sales"}
+                          </button>
+                        </>
+                      )}
                     </span>
                   </div>
                 ))}
@@ -822,30 +850,6 @@ function ReviewView({
                 </small>
               </span>
               {!canApprove && <FIcon name="e0d08.svg" size={20} />}
-            </section>
-            <section className={`resolution-card ${referenceConfirmed ? "resolved" : ""}`}>
-              <span className="resolution-number">{referenceConfirmed ? "✓" : "1"}</span>
-              <div>
-                <strong>Confirm PO reference</strong>
-                <small>Invoice says 4482201; linked PO is {linkedPo}</small>
-              </div>
-              {!referenceConfirmed && (
-                <button onClick={() => setReferenceConfirmed(true)}>Confirm match</button>
-              )}
-            </section>
-            <section className={`resolution-card ${freightResolved ? "resolved" : ""}`}>
-              <span className="resolution-number">{freightResolved ? "✓" : "2"}</span>
-              <div>
-                <strong>Resolve $270 freight variance</strong>
-                <small>
-                  {freightResolved ? "Sales approval applied" : "Owner confirmation required"}
-                </small>
-              </div>
-              {!freightResolved && (
-                <button onClick={() => setSalesOpen(true)}>
-                  {salesSent ? "View Teams reply" : "Ask in Teams"}
-                </button>
-              )}
             </section>
             <EvidencePanel />
           </aside>
