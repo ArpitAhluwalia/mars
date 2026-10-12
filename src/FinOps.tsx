@@ -552,31 +552,60 @@ function ReviewView({
         </div>
       </section>
       <div className="review-scroll">
-        <div className="review-columns">
-          <main className="reconciliation">
-            <section className="po-match-section">
-              <div className="review-section-title">
-                <strong>Purchase order match</strong>
-                <small>AI suggests. You control the PO link.</small>
+        <div className="review-workbench">
+          <main className="match-console">
+            <header className="match-console-header">
+              <div>
+                <span className="match-score">
+                  <strong>{canApprove ? "4/4" : `${2 + Number(referenceConfirmed) + Number(freightResolved)}/4`}</strong>
+                  checks passed
+                </span>
+                <span className="match-progress">
+                  {[true, true, referenceConfirmed, freightResolved].map((complete, index) => (
+                    <i className={complete ? "complete" : ""} key={index} />
+                  ))}
+                </span>
               </div>
-              <div className="po-search-row">
+              <label className="difference-toggle">
+                Show differences only
+                <input
+                  checked={differencesOnly}
+                  onChange={(event) => setDifferencesOnly(event.target.checked)}
+                  type="checkbox"
+                />
+                <img
+                  alt=""
+                  height={20}
+                  src={asset(differencesOnly ? "e2b5f.svg" : "b370e.svg")}
+                  width={36}
+                />
+              </label>
+            </header>
+            <section className="linked-po-bar">
+              <span className="linked-po-ai">
+                <FIcon name="7e9bc.svg" size={18} />
+              </span>
+              <span>
+                <small>Linked purchase order</small>
+                <strong>PO {linkedPo}</strong>
+              </span>
+              <span className="confidence-chip">98% match</span>
+              <Status>Linked</Status>
+              <button className="fin-secondary" onClick={() => setPoResults(!poResults)}>
+                Change PO
+              </button>
+            </section>
+            {poResults && (
+              <div className="po-finder">
                 <label className="fin-search">
                   <FIcon name="79676.svg" size={20} />
                   <input
                     aria-label="Search purchase orders"
                     onChange={(event) => setPoQuery(event.target.value)}
-                    placeholder="Search by PO number or vendor"
+                    placeholder="Search PO number or vendor"
                     value={poQuery}
                   />
                 </label>
-                <button className="fin-secondary" onClick={() => setPoResults(true)}>
-                  Search POs
-                </button>
-                <button className="fin-secondary" onClick={() => setPoResults(!poResults)}>
-                  Select another PO
-                </button>
-              </div>
-              {poResults && (
                 <div className="po-results">
                   {["4482210", "4482201", "4481942"]
                     .filter((po) => !poQuery || po.includes(poQuery))
@@ -597,150 +626,125 @@ function ReviewView({
                       </button>
                     ))}
                 </div>
-              )}
-              <div className="po-recommendation">
-                <div>
-                  <FIcon name="7e9bc.svg" size={18} />
-                  <strong>PO {linkedPo}</strong>
-                  <span>AI recommended · Closest match</span>
-                  <Status>Linked</Status>
-                  <button>View PO</button>
-                </div>
-                <p>
-                  Same vendor. Rooftop unit RTU-40 and curb adapter kit match in
-                  quantity and amount. Freight differs by $270.
-                </p>
-                <small>
-                  Invoice PO reference is 4482201, not {linkedPo}. Confirm the
-                  reference before approval.
-                </small>
               </div>
-            </section>
-            <section className="comparison-section">
-              <div className="review-section-title">
-                <strong>Invoice vs. linked PO</strong>
-                <label className="difference-toggle">
-                  Differences only
-                  <input
-                    checked={differencesOnly}
-                    onChange={(event) => setDifferencesOnly(event.target.checked)}
-                    type="checkbox"
-                  />
-                  <img
-                    alt=""
-                    height={20}
-                    src={asset(differencesOnly ? "e2b5f.svg" : "b370e.svg")}
-                    width={36}
-                  />
-                </label>
+            )}
+            <section className="visual-compare">
+              <div className="visual-compare-head">
+                <span>What we’re matching</span>
+                <span>
+                  <small>INVOICE</small>
+                  NTK-77413
+                </span>
+                <span>
+                  <small>PURCHASE ORDER</small>
+                  {linkedPo}
+                </span>
+                <span>Variance</span>
               </div>
-              <div className="field-comparison">
-                <div className="comparison-head">
-                  <span>Invoice details</span>
-                  <span>Invoice · NTK-77413</span>
-                  <span>Purchase order · {linkedPo}</span>
-                  <span>Result</span>
-                </div>
-                {!differencesOnly && (
-                  <div className="field-row">
-                    <span>Vendor</span>
-                    <span>Nortek Air Solutions</span>
-                    <span>Nortek Air Solutions</span>
+              {!differencesOnly && (
+                <div className="visual-compare-row matched">
+                  <span className="compare-label">
+                    <i />
                     <span>
-                      <Status>Matched</Status>
+                      <strong>Vendor</strong>
+                      <small>Supplier identity</small>
                     </span>
-                  </div>
-                )}
-                <div className="field-row">
-                  <span>PO reference</span>
-                  <span>4482201</span>
-                  <span>{linkedPo}</span>
-                  <span>
-                    {referenceConfirmed ? (
-                      <Status>Matched</Status>
-                    ) : (
-                      <button
-                        className="confirm-reference"
-                        onClick={() => setReferenceConfirmed(true)}
-                      >
-                        Confirm reference
-                      </button>
-                    )}
                   </span>
+                  <span>Nortek Air Solutions</span>
+                  <span>Nortek Air Solutions</span>
+                  <span className="zero-difference">Matched</span>
                 </div>
+              )}
+              <div className={`visual-compare-row ${referenceConfirmed ? "matched" : "attention"}`}>
+                <span className="compare-label">
+                  <i />
+                  <span>
+                    <strong>PO reference</strong>
+                    <small>Header reference</small>
+                  </span>
+                </span>
+                <span className="compare-value">4482201</span>
+                <span className="compare-value">{linkedPo}</span>
+                <span className={referenceConfirmed ? "zero-difference" : "reference-difference"}>
+                  {referenceConfirmed ? "Confirmed" : "Mismatch"}
+                </span>
               </div>
-              <div className="line-comparison">
-                <div className="line-head">
-                  <span>Line item · 2 matched, 1 difference</span>
-                  <span>Invoice amount / qty × price</span>
-                  <span>PO amount / qty × price</span>
-                  <span>Difference</span>
-                  <span>Result</span>
-                </div>
-                {lineItems
-                  .filter((item) => !differencesOnly || !item.matched)
-                  .map((item) => (
-                    <div className={`line-row ${item.matched ? "" : "variance"}`} key={item.name}>
+              {lineItems
+                .filter((item) => !differencesOnly || !item.matched)
+                .map((item) => (
+                  <div
+                    className={`visual-compare-row ${item.matched ? "matched" : "attention"}`}
+                    key={item.name}
+                  >
+                    <span className="compare-label">
+                      <i />
                       <span>
                         <strong>{item.name}</strong>
                         <small>{item.note}</small>
                       </span>
-                      <span>
-                        <strong>{item.invoice}</strong>
-                        <small>{item.invoiceQty}</small>
-                      </span>
-                      <span>
-                        <strong>{item.po}</strong>
-                        <small>{item.poQty}</small>
-                      </span>
-                      <span className={item.matched ? "" : "variance-amount"}>
-                        {item.difference}
-                      </span>
-                      <span>
-                        <Status>{item.matched ? "Matched" : "Needs clarification"}</Status>
-                      </span>
-                    </div>
-                  ))}
-                <div className="line-total">
-                  <strong>Total</strong>
-                  <strong>$9,180.50</strong>
-                  <strong>{freightResolved ? "$9,180.50" : "$8,910.50"}</strong>
-                  <strong className={freightResolved ? "" : "variance-amount"}>
-                    {freightResolved ? "$0.00" : "+$270.00"}
-                  </strong>
-                  <span>{freightResolved ? "Resolved" : "Unresolved"}</span>
-                </div>
-              </div>
-            </section>
-            <section className={`freight-card ${freightResolved ? "resolved" : ""}`}>
-              <div>
-                <FIcon name={freightResolved ? "d1f1f.svg" : "e0d08.svg"} size={20} />
-                <span>
-                  <strong>
-                    {freightResolved
-                      ? "Freight exception confirmed by Sales."
-                      : "Freight is $270 above the purchase order."}
-                  </strong>
-                  <small>
-                    {freightResolved
-                      ? "J. Alvarez confirmed the expedited freight charge in Microsoft Teams."
-                      : "The invoice charges $540; PO 4482210 allows $270. Was the additional freight agreed?"}
-                  </small>
-                </span>
-                <button className="fin-primary" onClick={() => setSalesOpen(true)}>
-                  {salesSent ? "Open Teams chat" : "Ask Sales"}
-                </button>
-              </div>
-              <div className="suggested-question">
-                <small>To J. Alvarez · Sales · Microsoft Teams</small>
-                <p>
-                  Was the additional $270 freight charge agreed with Nortek?
-                  Please share the reason or supporting evidence.
-                </p>
+                    </span>
+                    <span className="compare-money">
+                      <strong>{item.invoice}</strong>
+                      <small>{item.invoiceQty}</small>
+                    </span>
+                    <span className="compare-money">
+                      <strong>{item.po}</strong>
+                      <small>{item.poQty}</small>
+                    </span>
+                    <span className={item.matched ? "zero-difference" : "reference-difference"}>
+                      {item.matched ? "Matched" : item.difference}
+                    </span>
+                  </div>
+                ))}
+              <div className="visual-compare-total">
+                <strong>Total</strong>
+                <strong>$9,180.50</strong>
+                <strong>{freightResolved ? "$9,180.50" : "$8,910.50"}</strong>
+                <strong className={freightResolved ? "zero-difference" : "reference-difference"}>
+                  {freightResolved ? "$0.00" : "+$270.00"}
+                </strong>
               </div>
             </section>
           </main>
-          <EvidencePanel />
+          <aside className="resolution-rail">
+            <section className="resolution-summary">
+              <span className={canApprove ? "ready-ring complete" : "ready-ring"}>
+                {canApprove ? "100%" : `${50 + Number(referenceConfirmed) * 25 + Number(freightResolved) * 25}%`}
+              </span>
+              <span>
+                <strong>{canApprove ? "Ready to approve" : "Action required"}</strong>
+                <small>
+                  {canApprove ? "All checks completed" : `${2 - Number(referenceConfirmed) - Number(freightResolved)} issues remaining`}
+                </small>
+              </span>
+              {!canApprove && <FIcon name="e0d08.svg" size={20} />}
+            </section>
+            <section className={`resolution-card ${referenceConfirmed ? "resolved" : ""}`}>
+              <span className="resolution-number">{referenceConfirmed ? "✓" : "1"}</span>
+              <div>
+                <strong>Confirm PO reference</strong>
+                <small>Invoice says 4482201; linked PO is {linkedPo}</small>
+              </div>
+              {!referenceConfirmed && (
+                <button onClick={() => setReferenceConfirmed(true)}>Confirm match</button>
+              )}
+            </section>
+            <section className={`resolution-card ${freightResolved ? "resolved" : ""}`}>
+              <span className="resolution-number">{freightResolved ? "✓" : "2"}</span>
+              <div>
+                <strong>Resolve $270 freight variance</strong>
+                <small>
+                  {freightResolved ? "Sales approval applied" : "Owner confirmation required"}
+                </small>
+              </div>
+              {!freightResolved && (
+                <button onClick={() => setSalesOpen(true)}>
+                  {salesSent ? "View Teams reply" : "Ask in Teams"}
+                </button>
+              )}
+            </section>
+            <EvidencePanel />
+          </aside>
         </div>
       </div>
       <footer className="review-footer">
