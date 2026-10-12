@@ -129,46 +129,22 @@ function TeamsRail() {
 function ProductNav() {
   return (
     <aside aria-label="MARS navigation" className="product-nav">
-      <div className="product-brand">
-        <PlanetMark />
-        <span>
-          <strong>MARS</strong>
-          <small>Meriton Agentic Reconciliation System</small>
-        </span>
-      </div>
-      <button className="organization-switcher">
-        <span className="organization-mark">M</span>
-        <span>Meriton</span>
-        <span className="nav-chevron">⌄</span>
-      </button>
       <nav aria-label="Workspace">
-        <small className="nav-label">WORKSPACE</small>
         <button aria-current="page" className="product-nav-item active">
           <span className="nav-icon">
-            <Icon name="9fca5.svg" size={18} />
+            <Icon name="9fca5.svg" size={28} />
           </span>
-          <span>
-            <strong>Inbox</strong>
-            <small>Email intake</small>
-          </span>
-          <i>6</i>
+          <small>Inbox</small>
         </button>
       </nav>
       <div className="product-nav-footer">
         <button className="product-nav-item utility">
           <span className="settings-glyph" />
-          <span>
-            <strong>Settings</strong>
-            <small>Workspace preferences</small>
-          </span>
+          <small>Settings</small>
         </button>
         <button className="account-switcher">
           <span className="account-avatar">AP</span>
-          <span>
-            <strong>Accounts Payable</strong>
-            <small>Meriton</small>
-          </span>
-          <span className="nav-chevron">⌄</span>
+          <small>Account</small>
         </button>
       </div>
     </aside>
@@ -682,14 +658,12 @@ export default function App() {
           <i />
           <i />
         </div>
-        <div aria-hidden="true" className="teams-history">
-          <span>‹</span>
-          <span>›</span>
-        </div>
         <label className="teams-search">
           <Icon name="e324f.svg" size={16} />
-          <input aria-label="Search Microsoft Teams" placeholder="Search" />
-          <kbd>Ctrl E</kbd>
+          <input
+            aria-label="Search Microsoft Teams"
+            placeholder="Search Microsoft Teams"
+          />
         </label>
         <div className="teams-profile">
           <button aria-label="More Teams options">•••</button>
@@ -716,7 +690,6 @@ export default function App() {
             <header className="toolbar">
               <div className="mailbox-identity">
                 <span className="page-title">
-                  <small>EMAIL INTAKE</small>
                   <strong>Inbox</strong>
                 </span>
                 <span className="vertical-divider" />
