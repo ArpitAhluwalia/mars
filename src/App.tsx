@@ -406,6 +406,10 @@ function Detail({
               ? "October invoices · Dallas branch"
               : selectedMail.subject}
           </h1>
+          <span className="review-status">
+            <i />
+            Ready for review
+          </span>
           <div className="more-wrap">
             <button
               aria-label="Email actions"
@@ -582,7 +586,11 @@ export default function App() {
     <div className="app-shell">
       <header className="toolbar">
         <div className="mailbox-identity">
-          <strong>Inbox</strong>
+          <span className="app-mark">M</span>
+          <span className="page-title">
+            <small>MARS · AP RECONCILIATION</small>
+            <strong>Inbox</strong>
+          </span>
           <span className="vertical-divider" />
           <span className="connection-details">
             <span>
