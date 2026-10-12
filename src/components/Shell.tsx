@@ -15,7 +15,6 @@ import {
   Plus,
   ScrollText,
   Search,
-  Settings,
   Sparkles,
   UserCog,
   type LucideIcon,
@@ -61,7 +60,7 @@ function TeamsRail() {
 }
 
 function Sidebar() {
-  const { state, go, openPanel } = useMars()
+  const { state, go } = useMars()
   const invoices = useInvoices()
   const toReview = invoices.filter((item) => !["With Sales", "Approved"].includes(item.status)).length
   const replies = state.queries.filter((query) => query.reply && !query.applied).length
@@ -92,12 +91,6 @@ function Sidebar() {
         ))}
       </nav>
       <div className="sidebar-foot">
-        <button className={`side-utility ${state.panel === "settings" ? "active" : ""}`} onClick={() => openPanel("settings")}>
-          <span className="side-icon">
-            <Settings size={19} strokeWidth={1.6} />
-          </span>
-          <small>Settings</small>
-        </button>
         <span className="side-user" title={`${OWNER.name} · FinOps`}>
           <Avatar name={OWNER.name} size={28} />
         </span>
